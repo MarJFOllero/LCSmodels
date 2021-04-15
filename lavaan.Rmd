@@ -186,7 +186,7 @@ MI_LCS.model <- '
 ```
 
 4. Estimate the model parameters:
-```{r}
+``` {r, eval=TRUE, results='hide', echo=T, message=F}
 MI_LCS.fit <- lavaan(MI_LCS.model, data=dfwide, meanstructure=T, int.ov.free=T)
 summary(MI_LCS.fit, standardized = T)
 ```
@@ -304,7 +304,9 @@ BLCS.model <- '
  	X3 ~~ label("covMer")*Y3
  	X4 ~~ label("covMer")*Y4
  	X5 ~~ label("covMer")*Y5
-# In a LCS model, the means of the variables over time are defined by the latent level at t=0 and the additive component. However, lavaan automatically estimates the intercepts of the observed variables across all time points. To avoid this redundancy, we must fix the intercepts of the observed variables to 0:
+# In a LCS model, the means of the variables  are defined by the latent level at t=0 and the additive component. 
+#However, lavaan automatically estimates the intercepts of the observed variables across all time points. 
+#To avoid this redundancy, we must fix the intercepts of the observed variables to 0:
 	 X1 + X2 + X3 + X4 + X5 ~ 0*1 
 	 Y1 + Y2 + Y3 + Y4 + Y5 ~ 0*1 
 
@@ -325,7 +327,7 @@ BLCS.model <- '
 ```
 
 4. Estimate the model parameters:
-```{r, eval=F, message=FALSE}
+``` {r, eval=TRUE, results='hide', echo=T, message=F}
 BLCS.fit <- lavaan(BLCS.model, data=dfwide, meanstructure=T, int.ov.free=T)
 
 summary(BLCS.fit, standardized = T)
@@ -467,7 +469,7 @@ MI_BLCS.model <-'
 ```
 
 4. Estimate the model parameters:
-```{r}
+``` {r, eval=TRUE, results='hide', echo=T, message=F}
 MI_BLCS.fit <- lavaan(MI_BLCS.model, data=dfwide, meanstructure=T, int.ov.free=T)
 summary(MI_BLCS.fit, standardized = T)
 ```

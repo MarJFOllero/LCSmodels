@@ -18,6 +18,5 @@ In this section, we provide three interactive shiny apps to explore how modifica
 [Univariate LCS model: Means](https://marjfollero.shinyapps.io/LCS-means/)  
 [Univariate LCS model: Variances](https://marjfollero.shinyapps.io/LCS_variances/)  
 [Bivariate LCS model: Means](https://marjfollero.shinyapps.io/BLCS_means/)
-Hola
 
 

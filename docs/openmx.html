@@ -638,54 +638,8 @@ summary(BLCS.fit)</code></pre>
                             mxPath(from=change_y, arrows=2, free=TRUE, values=0, labels=&quot;derY&quot;),
                             mxPath(from=change_x, to=change_y, arrows=2, free=TRUE, values=0, labels=&quot;covDer&quot;))
 # Run the new model including innovations variances and covariance
-stoch_BLCS.fit &lt;- mxRun(stoch_BLCS.model) </code></pre>
-<pre><code>## Running Bivariate LCS with 23 parameters</code></pre>
-<pre class="r"><code>summary(stoch_BLCS.fit)</code></pre>
-<pre><code>## Summary of Bivariate LCS 
-##  
-## free parameters:
-##       name matrix      row      col    Estimate   Std.Error A
-## 1   beta_x      A Delta_x2       x1  0.60288269 0.009715951  
-## 2  gamma_y      A Delta_y2       x1 -0.24578344 0.006208989  
-## 3  gamma_x      A Delta_x2       y1  0.95441632 0.018624155  
-## 4   beta_y      A Delta_y2       y1 -0.39203653 0.012596048  
-## 5     merY      S       Y1       Y1  0.04548341 0.010143332  
-## 6   covMer      S       X1       X1  0.29555760 0.009483033  
-## 7    varx0      S       x0       x0  0.61531651 0.024740008  
-## 8  covx0xa      S       x0       xa -0.18999044 0.015137135  
-## 9    varxa      S       xa       xa  0.17806823 0.014258193  
-## 10 covx0y0      S       x0       y0 -0.13762347 0.014417543  
-## 11 covxay0      S       xa       y0 -0.20543079 0.011616959  
-## 12   vary0      S       y0       y0  0.45751709 0.018976062  
-## 13 covx0ya      S       x0       ya  0.03441336 0.006431347  
-## 14 covxaya      S       xa       ya -0.11828754 0.005188054  
-## 15 covy0ya      S       y0       ya  0.03139110 0.005913824  
-## 16   varya      S       ya       ya -0.06319358 0.006256364  
-## 17    derX      S Delta_x2 Delta_x2  0.39226419 0.033374137  
-## 18  covDer      S Delta_x2 Delta_y2  0.27089696 0.012865807  
-## 19    derY      S Delta_y2 Delta_y2  0.48102413 0.021078158  
-## 20  meanx0      M        1       x0 -1.06660642 0.020642608  
-## 21  meanxa      M        1       xa -3.32498894 0.072773121  
-## 22  meany0      M        1       y0  3.31622793 0.015933272  
-## 23  meanya      M        1       ya  1.67278454 0.048363686  
-## 
-## Model Statistics: 
-##                |  Parameters  |  Degrees of Freedom  |  Fit (-2lnL units)
-##        Model:             23                  19777              48893.06
-##    Saturated:             65                  19735                    NA
-## Independence:             20                  19780                    NA
-## Number of observations/statistics: 1980/19800
-## 
-## Information Criteria: 
-##       |  df Penalty  |  Parameters Penalty  |  Sample-Size Adjusted
-## AIC:       9339.064               48939.06                 48939.63
-## BIC:    -101231.218               49067.65                 48994.58
-## To get additional fit indices, see help(mxRefModels)
-## timestamp: 2021-04-15 02:19:32 
-## Wall clock time: 0.580405 secs 
-## optimizer:  SLSQP 
-## OpenMx version number: 2.19.1 
-## Need help?  See help(mxSummary)</code></pre>
+stoch_BLCS.fit &lt;- mxRun(stoch_BLCS.model) 
+summary(stoch_BLCS.fit)</code></pre>
 </div>
 <div id="multiple-indicators-1" class="section level2">
 <h2>Multiple Indicators</h2>

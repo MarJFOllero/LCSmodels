@@ -331,7 +331,7 @@ summary(BLCS.fit)
 ## Stochastic extension of the bivariate LCS model
 
 It is possible to include the innovation variance by just adding a new `mxPath()` to the already built BLCS.model:
-``` {r}
+``` {r, eval=TRUE, results='hide', echo=T, message=FALSE}
 stoch_BLCS.model <- mxModel(BLCS.model, # call the previous model
                             # Dynamic error variances and covariance
                             mxPath(from=change_x, arrows=2, free=TRUE, values=0, labels="derX"),

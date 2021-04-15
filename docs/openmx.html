@@ -553,7 +553,8 @@ dfwide &lt;- read.table(&quot;BLCSdata.txt&quot;)</code></pre>
 <pre class="r"><code>Tmax &lt;- 5 # Number of measurement occasions
 colnames(dfwide) &lt;- c(paste0(&quot;X&quot;, 1:Tmax), paste0(&quot;Y&quot;,1:Tmax))
 
-# Create the labels for the latent state at t=0, the additive component, the manifest scores, their corresponding latent scores, and the latent changes:
+# Create the labels for the latent state at t=0, the additive component, the manifest scores, 
+#their corresponding latent scores, and the latent changes:
 x0 &lt;- &quot;x0&quot;
 xa &lt;- &quot;xa&quot;
 y0 &lt;- &quot;y0&quot;
@@ -679,81 +680,81 @@ change_y &lt;- paste0(&quot;Delta_y&quot;, 2:Tmax)</code></pre>
                       latentVars=c(x0, xa, y0, ya, latent_x, latent_y, change_x, change_y),
                       mxData(observed = dfwide, type=&quot;raw&quot;),
                       
-            ### LATENT STRUCTURE
-                      # 1 -&gt; Initial factors and additive components (means)
-                      mxPath(from=&quot;one&quot;, to=c(xa, ya),
+    ### LATENT STRUCTURE
+              # 1 -&gt; Initial factors and additive components (means)
+              mxPath(from=&quot;one&quot;, to=c(xa, ya),
                              arrows=1, free=TRUE, values= 0, labels=c(&quot;meanxa&quot;, &quot;meanya&quot;)),
                       
-                      # Covariance structure of the latent initial conditions
+              # Covariance structure of the latent initial conditions
 
-                      mxPath(from=&quot;x0&quot;, arrows=2, free=TRUE, values=0, labels=&quot;varx0&quot;),
-                      mxPath(from=&quot;xa&quot;, arrows=2, free=TRUE, values=0, labels=&quot;varxa&quot;),
-                      mxPath(from=&quot;y0&quot;, arrows=2, free=TRUE, values=0, labels=&quot;vary0&quot;),
-                      mxPath(from=&quot;ya&quot;, arrows=2, free=TRUE, values=0, labels=&quot;varya&quot;),
-                      mxPath(from=&quot;x0&quot;, to=&quot;y0&quot;, arrows=2, free=TRUE, values=0, labels=&quot;covx0y0&quot;),
-                      mxPath(from=&quot;x0&quot;, to=&quot;xa&quot;, arrows=2, free=TRUE, values=0, labels=&quot;covx0xa&quot;),
-                      mxPath(from=&quot;x0&quot;, to=&quot;ya&quot;, arrows=2, free=TRUE, values=0, labels=&quot;covx0ya&quot;),
-                      mxPath(from=&quot;xa&quot;, to=&quot;y0&quot;, arrows=2, free=TRUE, values=0, labels=&quot;covxay0&quot;),
-                      mxPath(from=&quot;xa&quot;, to=&quot;ya&quot;, arrows=2, free=TRUE, values=0, labels=&quot;covxaya&quot;),
-                      mxPath(from=&quot;y0&quot;, to=&quot;ya&quot;, arrows=2, free=TRUE, values=0, labels=&quot;covy0ya&quot;),
+              mxPath(from=&quot;x0&quot;, arrows=2, free=TRUE, values=0, labels=&quot;varx0&quot;),
+              mxPath(from=&quot;xa&quot;, arrows=2, free=TRUE, values=0, labels=&quot;varxa&quot;),
+              mxPath(from=&quot;y0&quot;, arrows=2, free=TRUE, values=0, labels=&quot;vary0&quot;),
+              mxPath(from=&quot;ya&quot;, arrows=2, free=TRUE, values=0, labels=&quot;varya&quot;),
+              mxPath(from=&quot;x0&quot;, to=&quot;y0&quot;, arrows=2, free=TRUE, values=0, labels=&quot;covx0y0&quot;),
+              mxPath(from=&quot;x0&quot;, to=&quot;xa&quot;, arrows=2, free=TRUE, values=0, labels=&quot;covx0xa&quot;),
+              mxPath(from=&quot;x0&quot;, to=&quot;ya&quot;, arrows=2, free=TRUE, values=0, labels=&quot;covx0ya&quot;),
+              mxPath(from=&quot;xa&quot;, to=&quot;y0&quot;, arrows=2, free=TRUE, values=0, labels=&quot;covxay0&quot;),
+              mxPath(from=&quot;xa&quot;, to=&quot;ya&quot;, arrows=2, free=TRUE, values=0, labels=&quot;covxaya&quot;),
+              mxPath(from=&quot;y0&quot;, to=&quot;ya&quot;, arrows=2, free=TRUE, values=0, labels=&quot;covy0ya&quot;),
                       
-                      # Initial factor -&gt; Initial latent score
-                      mxPath(from=x0, to=latent_x[1], arrows=1, free=FALSE, values=1),
-                      mxPath(from=y0, to=latent_y[1], arrows=1, free=FALSE, values=1),
+              # Initial factor -&gt; Initial latent score
+              mxPath(from=x0, to=latent_x[1], arrows=1, free=FALSE, values=1),
+              mxPath(from=y0, to=latent_y[1], arrows=1, free=FALSE, values=1),
             
-                      # Latent[t-1] -&gt; Latent[t]
-                      mxPath(from=latent_x[1:(Tmax-1)], to=latent_x[2:Tmax], arrows=1, free=FALSE, values=1),
-                      mxPath(from=latent_y[1:(Tmax-1)], to=latent_y[2:Tmax], arrows=1, free=FALSE, values=1),
+              # Latent[t-1] -&gt; Latent[t]
+              mxPath(from=latent_x[1:(Tmax-1)], to=latent_x[2:Tmax], arrows=1, free=FALSE, values=1),
+              mxPath(from=latent_y[1:(Tmax-1)], to=latent_y[2:Tmax], arrows=1, free=FALSE, values=1),
             
-                      # Additive component -&gt; Change (alpha = 1)
-                      mxPath(from=xa, to=change_x, arrows=1, free=FALSE, values=1),
-                      mxPath(from=ya, to=change_y, arrows=1, free=FALSE, values=1),
+              # Additive component -&gt; Change (alpha = 1)
+              mxPath(from=xa, to=change_x, arrows=1, free=FALSE, values=1),
+              mxPath(from=ya, to=change_y, arrows=1, free=FALSE, values=1),
                       
-                      # Latent[t-1] -&gt; Change[t] (self-feedbacks)
-                      mxPath(from=latent_x[1:(Tmax-1)], to=change_x, arrows=1, free=TRUE, values=0, labels=&quot;beta_x&quot;),
-                      mxPath(from=latent_y[1:(Tmax-1)], to=change_y, arrows=1, free=TRUE, values=0, labels=&quot;beta_y&quot;),
+              # Latent[t-1] -&gt; Change[t] (self-feedbacks)
+              mxPath(from=latent_x[1:(Tmax-1)], to=change_x, arrows=1, free=TRUE, values=0, labels=&quot;beta_x&quot;),
+              mxPath(from=latent_y[1:(Tmax-1)], to=change_y, arrows=1, free=TRUE, values=0, labels=&quot;beta_y&quot;),
             
-                      # Latent[t-1] -&gt; Change[t] (couplings)
-                      mxPath(from=latent_x[1:(Tmax-1)], to=change_y, arrows=1, free=TRUE, values=0, labels=&quot;gamma_y&quot;),
-                      mxPath(from=latent_y[1:(Tmax-1)], to=change_x, arrows=1, free=TRUE, values=0, labels=&quot;gamma_x&quot;),
+              # Latent[t-1] -&gt; Change[t] (couplings)
+              mxPath(from=latent_x[1:(Tmax-1)], to=change_y, arrows=1, free=TRUE, values=0, labels=&quot;gamma_y&quot;),
+              mxPath(from=latent_y[1:(Tmax-1)], to=change_x, arrows=1, free=TRUE, values=0, labels=&quot;gamma_x&quot;),
 
-                      # Change -&gt; Latent
-                      mxPath(from=change_x, to=latent_x[2:Tmax], arrows=1, free=FALSE, values=1),
-                      mxPath(from=change_y, to=latent_y[2:Tmax], arrows=1, free=FALSE, values=1),
+              # Change -&gt; Latent
+              mxPath(from=change_x, to=latent_x[2:Tmax], arrows=1, free=FALSE, values=1),
+              mxPath(from=change_y, to=latent_y[2:Tmax], arrows=1, free=FALSE, values=1),
             
-                      ## For the stochastic version, include:
-                      # Dynamic error variances and covariance (time-invariant)
-                      mxPath(from=change_x, arrows=2, free=TRUE, values=0, labels=&quot;derX&quot;),
-                      mxPath(from=change_y, arrows=2, free=TRUE, values=0, labels=&quot;derY&quot;),
-                      mxPath(from=change_x, to=change_y, arrows=2, free=TRUE, values=0, labels=&quot;covDer&quot;),
+              ## For the stochastic version, include:
+              # Dynamic error variances and covariance (time-invariant)
+              mxPath(from=change_x, arrows=2, free=TRUE, values=0, labels=&quot;derX&quot;),
+              mxPath(from=change_y, arrows=2, free=TRUE, values=0, labels=&quot;derY&quot;),
+              mxPath(from=change_x, to=change_y, arrows=2, free=TRUE, values=0, labels=&quot;covDer&quot;),
             
-            ### MEASUREMENT STRUCTURE   
-                      # Factor loadings: Configural and weak invariance
-                      mxPath(from=latent_x, to=indic_X1, arrows=1, free=FALSE, values=1, labels=&quot;lambda_X1&quot;),
-                      mxPath(from=latent_x, to=indic_X2, arrows=1, free=TRUE, values=0, labels=&quot;lambda_X2&quot;),
-                      # mxPath(from=latent_x, to=indic_X3, arrows=1, free=TRUE, values=0, labels=&quot;lambda_X3&quot;),    
-                      mxPath(from=latent_y, to=indic_Y1, arrows=1, free=FALSE, values=1, labels=&quot;lambda_Y1&quot;),
-                      mxPath(from=latent_y, to=indic_Y2, arrows=1, free=TRUE, values=0, labels=&quot;lambda_Y2&quot;),
-                      mxPath(from=latent_y, to=indic_Y3, arrows=1, free=TRUE, values=0, labels=&quot;lambda_Y3&quot;),
+      ## MEASUREMENT STRUCTURE   
+              # Factor loadings: Configural and weak invariance
+              mxPath(from=latent_x, to=indic_X1, arrows=1, free=FALSE, values=1, labels=&quot;lambda_X1&quot;),
+              mxPath(from=latent_x, to=indic_X2, arrows=1, free=TRUE, values=0, labels=&quot;lambda_X2&quot;),
+              # mxPath(from=latent_x, to=indic_X3, arrows=1, free=TRUE, values=0, labels=&quot;lambda_X3&quot;),    
+              mxPath(from=latent_y, to=indic_Y1, arrows=1, free=FALSE, values=1, labels=&quot;lambda_Y1&quot;),
+              mxPath(from=latent_y, to=indic_Y2, arrows=1, free=TRUE, values=0, labels=&quot;lambda_Y2&quot;),
+              mxPath(from=latent_y, to=indic_Y3, arrows=1, free=TRUE, values=0, labels=&quot;lambda_Y3&quot;),
         
-                      # Intercepts of the indicators: Strong invariance
-                      mxPath(from=&quot;one&quot;, to=indic_X1, arrows=1, free=TRUE, values=0, labels=&quot;tau_X1&quot;),
-                      mxPath(from=&quot;one&quot;, to=indic_X2, arrows=1, free=TRUE, values=0, labels=&quot;tau_X2&quot;),
-                      # mxPath(from=&quot;one&quot;, to=indic_X3, arrows=1, free=TRUE, values=0, labels=&quot;tau_X3&quot;),
-                      mxPath(from=&quot;one&quot;, to=indic_Y1, arrows=1, free=TRUE, values=0, labels=&quot;tau_Y1&quot;),
-                      mxPath(from=&quot;one&quot;, to=indic_Y2, arrows=1, free=TRUE, values=0, labels=&quot;tau_Y2&quot;),
-                      mxPath(from=&quot;one&quot;, to=indic_Y3, arrows=1, free=TRUE, values=0, labels=&quot;tau_Y3&quot;),
+              # Intercepts of the indicators: Strong invariance
+              mxPath(from=&quot;one&quot;, to=indic_X1, arrows=1, free=TRUE, values=0, labels=&quot;tau_X1&quot;),
+              mxPath(from=&quot;one&quot;, to=indic_X2, arrows=1, free=TRUE, values=0, labels=&quot;tau_X2&quot;),
+              # mxPath(from=&quot;one&quot;, to=indic_X3, arrows=1, free=TRUE, values=0, labels=&quot;tau_X3&quot;),
+              mxPath(from=&quot;one&quot;, to=indic_Y1, arrows=1, free=TRUE, values=0, labels=&quot;tau_Y1&quot;),
+              mxPath(from=&quot;one&quot;, to=indic_Y2, arrows=1, free=TRUE, values=0, labels=&quot;tau_Y2&quot;),
+              mxPath(from=&quot;one&quot;, to=indic_Y3, arrows=1, free=TRUE, values=0, labels=&quot;tau_Y3&quot;),
             
-                      # Measurement error variances and covariances (time-invariant)
-                      mxPath(from=indic_X1, arrows=2, free=TRUE, values=0, labels=&quot;mer_X1&quot;),
-                      mxPath(from=indic_X2, arrows=2, free=TRUE, values=0, labels=&quot;mer_X2&quot;),
-                      # mxPath(from=indic_X3, arrows=2, free=TRUE, values=0, labels=&quot;mer_X3&quot;),                      
-                      mxPath(from=indic_Y1, arrows=2, free=TRUE, values=0, labels=&quot;mer_Y1&quot;),
-                      mxPath(from=indic_Y2, arrows=2, free=TRUE, values=0, labels=&quot;mer_Y2&quot;),
-                      mxPath(from=indic_Y3, arrows=2, free=TRUE, values=0, labels=&quot;mer_Y3&quot;)
-                      # mxPath(from=indic_X1, to=indic_Y1, arrows=2, free=TRUE, values=.5, labels=&quot;covMer1&quot;),
-                      # mxPath(from=indic_X2, to=indic_Y2, arrows=2, free=TRUE, values=.5, labels=&quot;covMer2&quot;),
-                      # mxPath(from=indic_X3, to=indic_Y3, arrows=2, free=TRUE, values=.5, labels=&quot;covMer3&quot;)
+              # Measurement error variances and covariances (time-invariant)
+              mxPath(from=indic_X1, arrows=2, free=TRUE, values=0, labels=&quot;mer_X1&quot;),
+              mxPath(from=indic_X2, arrows=2, free=TRUE, values=0, labels=&quot;mer_X2&quot;),
+              # mxPath(from=indic_X3, arrows=2, free=TRUE, values=0, labels=&quot;mer_X3&quot;),                      
+              mxPath(from=indic_Y1, arrows=2, free=TRUE, values=0, labels=&quot;mer_Y1&quot;),
+              mxPath(from=indic_Y2, arrows=2, free=TRUE, values=0, labels=&quot;mer_Y2&quot;),
+              mxPath(from=indic_Y3, arrows=2, free=TRUE, values=0, labels=&quot;mer_Y3&quot;)
+            # mxPath(from=indic_X1, to=indic_Y1, arrows=2, free=TRUE, values=.5, labels=&quot;covMer1&quot;),
+            # mxPath(from=indic_X2, to=indic_Y2, arrows=2, free=TRUE, values=.5, labels=&quot;covMer2&quot;),
+            # mxPath(from=indic_X3, to=indic_Y3, arrows=2, free=TRUE, values=.5, labels=&quot;covMer3&quot;)
             )</code></pre>
 <ol start="4" style="list-style-type: decimal">
 <li>Estimate the model parameters:</li>

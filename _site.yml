@@ -1,0 +1,14 @@
+name: "Latent Change Score models"
+output_dir: "docs"
+navbar:
+  title: "Latent Change Score models"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "lavaan"
+      href: lavaan.html
+    - text: "OpenMx"
+      href: openmx.html
+output:
+  html_document:
+    theme: sandstone 

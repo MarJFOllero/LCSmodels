@@ -12,7 +12,7 @@ In each section, you can also find code for estimating the stochastic version of
 
 ***
 
-# Shiny apps: 
+# Shiny apps 
 In this section, we provide three interactive shiny apps to explore how modifications in the generating parameters lead to differences in the developmental trajectories.
 
 [Univariate LCS model: Means](https://marjfollero.shinyapps.io/LCS-means/)  

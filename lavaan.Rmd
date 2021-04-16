@@ -5,7 +5,6 @@ output:
     toc: true
     toc_float: true
 ---
-
 ## 
 ##
 # The Univariate LCS model {.tabset .tabset-fade}
@@ -14,7 +13,7 @@ In `lavaan`, models are described with a single block of syntax. Regressions are
 
 
 ## Single indicator
-* Obtain the example dataset here:
+Obtain the example dataset here:
 ```{r, echo=FALSE}
 xfun::embed_file('LCSdata.txt')
 ```   
@@ -23,8 +22,7 @@ We will estimate the following model:
 ![](stochLCS.PNG)
 
 
-
-1. If necessary, install `lavaan`. Then, load the package and dataset: 
+Step 1. If necessary, install `lavaan`. Then, load the package and dataset: 
 ```{r, eval=F}
 install.packages("lavaan")
 ````
@@ -34,13 +32,13 @@ library(lavaan)
 dfwide <- read.table("LCSdata.txt")
 ```
 
-2. Define the variables of the model:
+Step 2. Define the variables of the model:
 ```{r}
 Tmax <- 5 # Number of measurement occasions
 colnames(dfwide) <- paste0("Y", 1:Tmax)
 ```
 
-3. Build the model:  
+Step 3. Build the model:  
 ```{r}
 LCS.model <- '
 ### Latent structure
@@ -90,8 +88,7 @@ LCS.model <- '
  	dy4 ~~ label("derY")*dy4
  	dy5 ~~ label("derY")*dy5'
 ```
-
-4. Estimate the model parameters:
+Step 4. Estimate the model parameters:
 ```{r, eval=F, message=F}
 LCS.fit <- lavaan(LCS.model, data=dfwide)
 
@@ -100,7 +97,7 @@ summary(LCS.fit, standardized = T)
 
 ## Multiple indicators
 
-* Obtain the example dataset here:
+Obtain the example dataset here:
 ```{r, echo=FALSE}
 xfun::embed_file('MILCSdata.txt')
 ```
@@ -108,18 +105,18 @@ xfun::embed_file('MILCSdata.txt')
 We will estimate the following model:  
 ![](MI_LCS.PNG)
 
-1. Load the package and dataset:
+Step 1. If necessary, install `lavaan`. Then, load the package and dataset: 
 ```{r}
 library(lavaan)
 dfwide <- read.table("MILCSdata.txt")
 ```
 
-2. Define the number of measurement occasions:
+Step 2. Define the variables of the model:
 ```{r}
 Tmax <- 5 # Number of measurement occasions
 ```
 
-3. Build the model:  
+Step 3. Build the model:    
 ```{r}
 # 2. Build the model with lavaan code:
 MI_LCS.model <- '
@@ -185,7 +182,7 @@ MI_LCS.model <- '
  	dy5 ~~ label("derY")*dy5'
 ```
 
-4. Estimate the model parameters:
+Step 4. Estimate the model parameters:
 ``` {r, eval=TRUE, results='hide', echo=T, message=F}
 MI_LCS.fit <- lavaan(MI_LCS.model, data=dfwide, meanstructure=T, int.ov.free=T)
 summary(MI_LCS.fit, standardized = T)
@@ -198,7 +195,7 @@ summary(MI_LCS.fit, standardized = T)
 
 ## Single indicator
 
-* Obtain the example dataset here:
+Obtain the example dataset here:
 ```{r, echo=FALSE}
 xfun::embed_file('BLCSdata.txt')
 ```   
@@ -208,7 +205,7 @@ We will estimate the following model:
 
 
 
-1. If necessary, install `lavaan`. Then, load the package and dataset:
+Step 1. If necessary, install `lavaan`. Then, load the package and dataset: 
 ```{r, eval=F}
 install.packages("lavaan")
 ```{r, eval=T, message=F} 
@@ -216,13 +213,13 @@ library(lavaan)
 dfwide <- read.table("BLCSdata.txt")
 ```
 
-2. Define the variables of the model:
+Step 2. Define the variables of the model:
 ```{r}
 Tmax <- 5 # Number of measurement occasions
 colnames(dfwide) <- c(paste0("X", 1:Tmax), paste0("Y", 1:Tmax))
 ```
 
-3. Build the model:  
+Step 3. Build the model:   
 ```{r}
 BLCS.model <- '
 ### Latent structure
@@ -326,7 +323,7 @@ BLCS.model <- '
  	dx5 ~~ label("covDer")*dy5'
 ```
 
-4. Estimate the model parameters:
+Step 4. Estimate the model parameters:
 ``` {r, eval=TRUE, results='hide', echo=T, message=F}
 BLCS.fit <- lavaan(BLCS.model, data=dfwide, meanstructure=T, int.ov.free=T)
 
@@ -334,7 +331,7 @@ summary(BLCS.fit, standardized = T)
 ```
 
 ## Multiple Indicators
-* Obtain the example dataset here:
+Obtain the example dataset here:
 ```{r, echo=FALSE}
 xfun::embed_file('MIBLCSdata.txt')
 ```
@@ -342,18 +339,18 @@ xfun::embed_file('MIBLCSdata.txt')
 We will estimate the following model: 
 ![](MI_BLCS.PNG)
 
-1. Load the package and dataset:
+Step 1. If necessary, install `lavaan`. Then, load the package and dataset: 
 ```{r}
 library(lavaan)
 dfwide <- read.table("MIBLCSdata.txt")
 ```
 
-2. Define the number of measurement occasions:
+Step 2. Define the variables of the model:
 ```{r}
 Tmax <- 5 # Number of measurement occasions
 ```
 
-3. Build the model:  
+Step 3. Build the model:    
 ```{r}
 # 2. Build the model with lavaan code:
 MI_BLCS.model <-'
@@ -468,7 +465,7 @@ MI_BLCS.model <-'
  	dx5 ~~ label("covDer")*dy5'
 ```
 
-4. Estimate the model parameters:
+Step 4. Estimate the model parameters:
 ``` {r, eval=TRUE, results='hide', echo=T, message=F, warning=F}
 MI_BLCS.fit <- lavaan(MI_BLCS.model, data=dfwide, meanstructure=T, int.ov.free=T)
 summary(MI_BLCS.fit, standardized = T)

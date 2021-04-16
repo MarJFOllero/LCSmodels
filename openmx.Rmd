@@ -14,9 +14,9 @@ In `OpenMx`, the first step is to define the names of all the latent and manifes
 
 Before building the model, some preparations are necessary:    
 
- * Choose a name for the model. By setting the argument `type` to *RAM* (Reticular Action Model), the model is defined in terms of single-headed and double-headed paths between variables, just as in a path diagram. 
+ * Choose a name for the model. By setting the argument `type` to <strong>RAM</strong> (Reticular Action Model), the model is defined in terms of single-headed and double-headed paths between variables, just as in a path diagram. 
  * `manifestVars` and `latentVars` are used to specify which variables are manifest and which are latent. 
- * `mxData()` allows to select the dataset as input and indicate that it contains raw scores by setting the argument type to *raw* (it is also possible to use covariance or correlation matrices as inputs). 
+ * `mxData()` allows to select the dataset as input and indicate that it contains raw scores by setting the argument type to <strong>raw</strong> (it is also possible to use covariance or correlation matrices as inputs). 
   
   
 Once we have finished the preparations, building the model is very intuitive. All paths are defined through the function `mxPath()`.  `from` and `to` are used to indicate the origins and endings of the paths, `arrows` to indicate regression (`=1`) or covariance (`=2`), `free` to fix (`=FALSE`) or freely estimate (`=TRUE`) the parameters defining the path, `values` to indicate the value of the fixed parameter when `free=FALSE` or to set a value from which to initialize the estimation process when `free=TRUE`, and `labels` to name the parameter defining the paths. Using the same label for multiple paths implies imposing an equality constraint, meaning that a single parameter will be estimated across those paths.  

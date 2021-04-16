@@ -1,11 +1,11 @@
 ---
-title: "Latent Change Score models" 
+title: "Dynamical properties and conceptual interpretation of Latent Change Score models" 
 output: 
   html_document:
     toc: true
     toc_float: true
 ---
-This website contains the supplemental materials for “Title of the article” by Fernández-Cáncer, Estrada, Ollero, and Ferrer (2021). We provide lavaan (Rosseel 2012) and OpenMx (Neale et al., 2016) code for the estimation of univariate and bivariate LCS models. 
+This website contains the supplemental materials for “Dynamical properties and conceptual interpretation of Latent Change Score models” by Fernández-Cáncer, Estrada, Ollero, and Ferrer (2021). We provide lavaan (Rosseel 2012) and OpenMx (Neale et al., 2016) code for the estimation of univariate and bivariate LCS models. 
 
 In each section, you can also find code for estimating the stochastic version of these models, and their extension with multiple indicators. For each model, we include a .txt file with simulated repeated measures of developmental processes associated with aging. The data is based on Snitz et al. (2015), who examined the dynamic interrelations between subjective memory complaints (SM) and objective memory (OM) performance in a sample of 1980 old adults over five years (5 waves). 
 

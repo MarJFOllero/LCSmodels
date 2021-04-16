@@ -1,7 +1,7 @@
-name: "Latent Change Score models"
+name: "Dynamical properties and conceptual interpretation of Latent Change Score models"
 output_dir: "docs"
 navbar:
-  title: "Latent Change Score models"
+  title: "Dynamical properties and conceptual interpretation of Latent Change Score models"
   left:
     - text: "Home"
       href: index.html

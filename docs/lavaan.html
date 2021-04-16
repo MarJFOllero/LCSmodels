@@ -776,13 +776,8 @@ MI_BLCS.model &lt;-&#39;
 <ol start="4" style="list-style-type: decimal">
 <li>Estimate the model parameters:</li>
 </ol>
-<pre class="r"><code>MI_BLCS.fit &lt;- lavaan(MI_BLCS.model, data=dfwide, meanstructure=T, int.ov.free=T)</code></pre>
-<pre><code>## Warning in lav_model_vcov(lavmodel = lavmodel, lavsamplestats = lavsamplestats, : lavaan WARNING:
-##     The variance-covariance matrix of the estimated parameters (vcov)
-##     does not appear to be positive definite! The smallest eigenvalue
-##     (= 2.095149e-16) is close to zero. This may be a symptom that the
-##     model is not identified.</code></pre>
-<pre class="r"><code>summary(MI_BLCS.fit, standardized = T)</code></pre>
+<pre class="r"><code>MI_BLCS.fit &lt;- lavaan(MI_BLCS.model, data=dfwide, meanstructure=T, int.ov.free=T)
+summary(MI_BLCS.fit, standardized = T)</code></pre>
 <hr />
 </div>
 </div>

@@ -469,7 +469,7 @@ MI_BLCS.model <-'
 ```
 
 4. Estimate the model parameters:
-``` {r, eval=TRUE, results='hide', echo=T, message=F}
+``` {r, eval=TRUE, results='hide', echo=T, message=F, warning=F}
 MI_BLCS.fit <- lavaan(MI_BLCS.model, data=dfwide, meanstructure=T, int.ov.free=T)
 summary(MI_BLCS.fit, standardized = T)
 ```

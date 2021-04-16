@@ -26,7 +26,7 @@ An important advantage of `OpenMx` is that it does not require to define each si
 
 
 ## Single indicator
-* Obtain the example dataset here:
+Obtain the example dataset here:
 ```{r, echo=FALSE}
 xfun::embed_file('LCSdata.txt')
 ```   
@@ -36,7 +36,7 @@ We will estimate the following model:
 
 
 
-1. If necessary, install `OpenMx`. Then, load the package and dataset: 
+Step 1. If necessary, install `OpenMx`. Then, load the package and dataset: 
 ```{r, eval=F}
 install.packages("OpenMx")
 ````
@@ -46,7 +46,7 @@ library(OpenMx)
 dfwide <- read.table("LCSdata.txt")
 ```
 
-2. Define the variables of the model:
+Step 2. Define the variables of the model:
 ```{r}
 Tmax <- 5 # Number of measurement occasions
 colnames(dfwide) <- paste0("Y", 1:Tmax)
@@ -63,7 +63,7 @@ change_y <- paste0("Delta_", 2:Tmax)
 ```
 
 
-3. Build the model:  
+Step 3. Build the model:  
 ```{r}
 LCS.model <- mxModel("Univariate LCS", type = "RAM",
                manifestVars = manif_Y,
@@ -107,7 +107,7 @@ LCS.model <- mxModel("Univariate LCS", type = "RAM",
                mxPath(from=manif_Y, arrows=2, free=TRUE, values=.5, labels="merY"))
 ```
 
-4. Estimate the model parameters:
+Step 4. Estimate the model parameters:
 ``` {r, eval=TRUE, results='hide', echo=T, message=FALSE}
 LCS.fit <- mxRun(LCS.model)
 summary(LCS.fit)
@@ -129,7 +129,7 @@ summary(stoch_LCS.fit)
 
 ## Multiple indicators
 
-* Obtain the example dataset here:
+Obtain the example dataset here:
 ```{r, echo=FALSE}
 xfun::embed_file('MILCSdata.txt')
 ```
@@ -137,13 +137,13 @@ xfun::embed_file('MILCSdata.txt')
 We will estimate the following model:  
 ![](MI_LCS.PNG)
 
-1. Load the package and dataset:
+Step 1. If necessary, install `OpenMx`. Then, load the package and dataset: 
 ```{r}
 library(OpenMx)
 dfwide <- read.table("MILCSdata.txt")
 ```
 
-2. Define the number of measurement occasions:
+Step 2. Define the variables of the model:
 ```{r}
 Tmax <- 5 # Number of measurement occasions
 # Create the labels for the latent state at t=0, the additive component, each one of the observed indicators, the latent scores, and the latent changes:
@@ -156,7 +156,7 @@ latent_y <- paste0("y", 1:Tmax)
 change_y <- paste0("Delta_", 2:Tmax)
 ```
 
-3. Build the model:  
+Step 3. Build the model:   
 ```{r}
 MI_LCS.model <- mxModel("Multiple Indicator LCS", type = "RAM",
                         manifestVars = c(indic_Y1, indic_Y2, indic_Y3),
@@ -213,7 +213,7 @@ MI_LCS.model <- mxModel("Multiple Indicator LCS", type = "RAM",
 
 ```
 
-4. Estimate the model parameters:
+Step 4. Estimate the model parameters:
 `````` {r, eval=TRUE, results='hide', echo=T, message=FALSE}
 MI_LCS.fit <- mxRun(MI_LCS.model)
 summary(MI_LCS.fit)
@@ -226,7 +226,7 @@ summary(MI_LCS.fit)
 
 ## Single indicator
 
-* Obtain the example dataset here:
+Obtain the example dataset here:
 ```{r, echo=FALSE}
 xfun::embed_file('BLCSdata.txt')
 ```   
@@ -234,13 +234,13 @@ xfun::embed_file('BLCSdata.txt')
 We will estimate the following model:  
 ![](stochBLCS.PNG)
 
-1. Load package and dataset: 
+Step 1. If necessary, install `OpenMx`. Then, load the package and dataset: 
 ```{r, eval=T, message=F} 
 library(OpenMx)
 dfwide <- read.table("BLCSdata.txt")
 ```
 
-2. Define the variables of the model:
+Step 2. Define the variables of the model:
 ```{r}
 
 Tmax <- 5 # Number of measurement occasions
@@ -261,7 +261,7 @@ change_y <- paste0("Delta_y", 2:Tmax)
 ```
 
 
-3. Build the model:  
+Step 3. Build the model:   
 ```{r}
 BLCS.model <- mxModel("Bivariate LCS", type="RAM",
                 manifestVars=c(manif_Y, manif_X),
@@ -322,8 +322,8 @@ BLCS.model <- mxModel("Bivariate LCS", type="RAM",
 ```
  
 
-4. Estimate the model parameters: 
-`````` {r, eval=TRUE, results='hide', echo=T, message=F}
+Step 4. Estimate the model parameters:
+``` {r, eval=TRUE, results='hide', echo=T, message=F}
 
 BLCS.fit <- mxRun(BLCS.model)
 summary(BLCS.fit)
@@ -344,7 +344,7 @@ summary(stoch_BLCS.fit)
 ```
 
 ## Multiple Indicators
-* Obtain the example dataset here:
+Obtain the example dataset here:
 ```{r, echo=FALSE}
 xfun::embed_file('MIBLCSdata.txt')
 ```
@@ -352,13 +352,13 @@ xfun::embed_file('MIBLCSdata.txt')
 We will estimate the following model: 
 ![](MI_BLCS.PNG)
 
-1. Load the package and dataset:
+Step 1. If necessary, install `OpenMx`. Then, load the package and dataset: 
 ```{r}
 library(OpenMx)
 dfwide <- read.table("MIBLCSdata.txt")
 ```
 
-2. Define the number of measurement occasions:
+Step 2. Define the variables of the model:
 ```{r}
 Tmax <- 5 # Number of measurement occasions
 # Variables
@@ -378,7 +378,7 @@ change_x <- paste0("Delta_x", 2:Tmax)
 change_y <- paste0("Delta_y", 2:Tmax)
 ```
 
-3. Build the model:  
+Step 3. Build the model:   
 ```{r}
 MI_BLCS.model <- mxModel("Bivariate LCS", type="RAM",
                       manifestVars=c(indic_X1, indic_X2, indic_Y1, indic_Y2, indic_Y3),
@@ -464,7 +464,7 @@ MI_BLCS.model <- mxModel("Bivariate LCS", type="RAM",
 
 ```
 
-4. Estimate the model parameters:  
+Step 4. Estimate the model parameters: 
 ``` {r, eval=TRUE, results='hide', echo=T, message=F}
 
 MI_BLCS.fit <- mxRun(MI_BLCS.model)

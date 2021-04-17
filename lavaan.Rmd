@@ -407,16 +407,16 @@ MI_BLCS.model <-'
 
 ### Measurement structure
 # Factor loadings: Configural and weak invariance
-	lx1 =~ label("lambda_X1")*X1_t1 + label("lambda_X2")*X2_t1 
-	lx2 =~ label("lambda_X1")*X1_t2 + label("lambda_X2")*X2_t2 
-	lx3 =~ label("lambda_X1")*X1_t3 + label("lambda_X2")*X2_t3 
-	lx4 =~ label("lambda_X1")*X1_t4 + label("lambda_X2")*X2_t4 
-	lx5 =~ label("lambda_X1")*X1_t5 + label("lambda_X2")*X2_t5 
-	ly1 =~ label("lambda_Y1")*Y1_t1 + label("lambda_Y2")*Y2_t1 + label("lambda_Y3")*Y3_t1 
-	ly2 =~ label("lambda_Y1")*Y1_t2 + label("lambda_Y2")*Y2_t2 + label("lambda_Y3")*Y3_t2 
-	ly3 =~ label("lambda_Y1")*Y1_t3 + label("lambda_Y2")*Y2_t3 + label("lambda_Y3")*Y3_t3 
-	ly4 =~ label("lambda_Y1")*Y1_t4 + label("lambda_Y2")*Y2_t4 + label("lambda_Y3")*Y3_t4 
-	ly5 =~ label("lambda_Y1")*Y1_t5 + label("lambda_Y2")*Y2_t5 + label("lambda_Y3")*Y3_t5 
+	lx1 =~ 1*X1_t1 + label("lambda_X2")*X2_t1 
+	lx2 =~ 1*X1_t2 + label("lambda_X2")*X2_t2 
+	lx3 =~ 1*X1_t3 + label("lambda_X2")*X2_t3 
+	lx4 =~ 1*X1_t4 + label("lambda_X2")*X2_t4 
+	lx5 =~ 1*X1_t5 + label("lambda_X2")*X2_t5 
+	ly1 =~ 1*Y1_t1 + label("lambda_Y2")*Y2_t1 + label("lambda_Y3")*Y3_t1 
+	ly2 =~ 1*Y1_t2 + label("lambda_Y2")*Y2_t2 + label("lambda_Y3")*Y3_t2 
+	ly3 =~ 1*Y1_t3 + label("lambda_Y2")*Y2_t3 + label("lambda_Y3")*Y3_t3 
+	ly4 =~ 1*Y1_t4 + label("lambda_Y2")*Y2_t4 + label("lambda_Y3")*Y3_t4 
+	ly5 =~ 1*Y1_t5 + label("lambda_Y2")*Y2_t5 + label("lambda_Y3")*Y3_t5 
 # Intercepts of the indicators: Strong invariance
 	 X1_t1 + X1_t2 + X1_t3 + X1_t4 + X1_t5 ~ label("tau_X1")*1 
 	 X2_t1 + X2_t2 + X2_t3 + X2_t4 + X2_t5 ~ label("tau_X2")*1 

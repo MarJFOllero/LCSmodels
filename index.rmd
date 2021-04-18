@@ -18,6 +18,7 @@ Here we present some interactive tools built with the R package Shiny (Chang et 
 
 In apps 1 and 2, you can control the parameters determining the evolution of the mean structure in an univariate and bivariate LCS model, respectively. In app 3, you can modify the variance parameters to examine the changes in within- and between-person variability in the observed trajectories.
 
+
 ##### [1. Univariate LCS model: Means](https://marjfollero.shinyapps.io/LCS-means/)
 ##### [2. Bivariate LCS model: Means](https://marjfollero.shinyapps.io/BLCS_means/) 
 ##### [3. Univariate LCS model: Variances](https://marjfollero.shinyapps.io/LCS_variances/)  

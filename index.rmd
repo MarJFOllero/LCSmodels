@@ -1,22 +1,29 @@
 ---
-title: "Dynamical properties and conceptual interpretation of Latent Change Score models" 
-output: 
-  html_document:
-    toc: true
-    toc_float: true
+title: "Properties and interpretation of LCS models"
+author: 'Mar J.F. Ollero and [Pablo Fernández-Cáncer](mailto:pfernandezcancer@gmail.com) - Autonomous University of Madrid, Spain.'
+output: html_document
+bibliography: references.bib
 ---
-This website contains the supplemental materials for “Dynamical properties and conceptual interpretation of Latent Change Score models” by Fernández-Cáncer, Estrada, Ollero, and Ferrer (2021). We provide lavaan (Rosseel 2012) and OpenMx (Neale et al., 2016) code for the estimation of univariate and bivariate LCS models. 
 
-In each section, you can also find code for estimating the stochastic version of these models, and their extension with multiple indicators. For each model, we include a .txt file with simulated repeated measures of developmental processes associated with aging. The data is based on Snitz et al. (2015), who examined the dynamic interrelations between subjective memory complaints (SM) and objective memory (OM) performance in a sample of 1980 old adults over five years (5 waves). 
+---
+
+This website contains the supplemental materials for “Dynamical properties and conceptual interpretation of Latent Change Score models” by Fernández-Cáncer, Estrada, Ollero, and Ferrer (under review). We provide lavaan [@Rosseel2012] and OpenMx [@Neale2016] code for the estimation of univariate and bivariate LCS models in R.
+
+In each section, you can also find code for estimating the stochastic specification of these models, and their extension with multiple indicators. For each model, we include a .txt file with simulated repeated measures of developmental processes associated with aging. The data is based on @Snitz2015, who examined the dynamic interrelations between subjective memory complaints and objective memory performance in a sample of 1980 old adults over five years (5 waves).
+
+---
+
+### Shiny apps
+Here we present some interactive tools built with the R package Shiny (Chang et al., 2016). These <em>shiny apps</em> contain trajectories from univariate and bivariate LCS models. By moving the slide bars in the left panel, you can modify the values of the model parameters and examine the consequences in the shape of the observed long-term trajectories.
+
+In apps 1 and 2, you can control the parameters determining the evolution of the mean structure in an univariate and bivariate LCS model, respectively. In app 3, you can modify the variance parameters to examine the changes in within- and between-person variability in the observed trajectories.
+
+##### [1. Univariate LCS model: Means](https://marjfollero.shinyapps.io/LCS-means/)
+##### [2. Bivariate LCS model: Means](https://marjfollero.shinyapps.io/BLCS_means/) 
+##### [3. Univariate LCS model: Variances](https://marjfollero.shinyapps.io/LCS_variances/)  
 
 
-***
+---
 
-# Shiny apps 
-In this section, we provide three interactive shiny apps to explore how modifications in the generating parameters lead to differences in the developmental trajectories.
-
-[Univariate LCS model: Means](https://marjfollero.shinyapps.io/LCS-means/)  
-[Univariate LCS model: Variances](https://marjfollero.shinyapps.io/LCS_variances/)  
-[Bivariate LCS model: Means](https://marjfollero.shinyapps.io/BLCS_means/)
-
+### References
 

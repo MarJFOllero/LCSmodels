@@ -1,5 +1,5 @@
 ---
-title: "OpenMx"
+title: "Building LCS models with OpenMx"
 output: 
   html_document:
     toc: true
@@ -8,25 +8,31 @@ output:
 
 ## 
 ##
+
+In `OpenMx`, it is possible to specify a Structural Equation Model either by writing the entire matrices (with `mxMatrix()`), or by writing only the paths (with `mxPath()`). We will use the latter because it is faster to specify with longitudinal data, and usually more intuitive for researchers. First, install the package if necessary:
+```{r, eval=F}
+install.packages("OpenMx")
+````
+
+To build a model in `OpenMx`, we use the function `mxModel()` with the following arguments:
+
+ * `model`: Use `model = "LCS_model"` to create a new model with named "LCS_model".
+ * `type`: Use `type = RAM` (Reticular Action Model), to define the model in terms of single-headed and double-headed paths between variables, just as in a path diagram. 
+ * `manifestVars = c("Y1", "Y2", "Y3"...)`: Include the names of the observed variables in your database.
+ * `latentVars = c("y1", "y2", "y3"...)`: Include the names that you will use to identify the latent variables in the model.
+ * `mxData(observed = dfwide, type="raw")`: Select your database and indicate that it contains observed scores by setting the argument type to `raw` (it is also possible to use covariance or correlation matrices as inputs).
+  
+Once we have finished the preparations, building the model is very intuitive. All paths are defined through the function `mxPath()`. The arguments `from` and `to` are used to indicate the origins and endings of the paths, `arrows` to indicate regression (`=1`) or covariance (`=2`), `free` to fix (`=FALSE`) or freely estimate (`=TRUE`) the parameters defining the paths, `values` to indicate the value of a fixed parameter (when `free=FALSE`) or to set to set an initial value for a free parameter (when `free=TRUE`), and `labels` to name the parameter defining the paths. Using the same label for multiple paths implies imposing an equality constraint, meaning that a single parameter will be estimated across those paths.  
+  
+  
+An important advantage of `OpenMx` is that it does not require to define each single path separately. For example, it is possible to define all the paths from <em>y</em>(t - 1) to y</em>(t) just by specifying `from=latent_y[1:(t-1)], to=latent_y[2:t]` inside `mxPath()`, where `latent_y` is a string that contains the names of the latent states of <em>y</em> across all time points.
+
+---
+
 # The Univariate LCS model {.tabset .tabset-fade}
 
-In `OpenMx`, the first step is to define the names of all the latent and manifest variables. The names of the manifest variables in the model must match those in the dataset.
-
-Before building the model, some preparations are necessary:    
-
- * Choose a name for the model. By setting the argument `type` to <strong>RAM</strong> (Reticular Action Model), the model is defined in terms of single-headed and double-headed paths between variables, just as in a path diagram. 
- * `manifestVars` and `latentVars` are used to specify which variables are manifest and which are latent. 
- * `mxData()` allows to select the dataset as input and indicate that it contains raw scores by setting the argument type to <strong>raw</strong> (it is also possible to use covariance or correlation matrices as inputs). 
-  
-  
-Once we have finished the preparations, building the model is very intuitive. All paths are defined through the function `mxPath()`.  `from` and `to` are used to indicate the origins and endings of the paths, `arrows` to indicate regression (`=1`) or covariance (`=2`), `free` to fix (`=FALSE`) or freely estimate (`=TRUE`) the parameters defining the path, `values` to indicate the value of the fixed parameter when `free=FALSE` or to set a value from which to initialize the estimation process when `free=TRUE`, and `labels` to name the parameter defining the paths. Using the same label for multiple paths implies imposing an equality constraint, meaning that a single parameter will be estimated across those paths.  
-  
-  
-An important advantage of `OpenMx` is that it does not require to define each single path separately. For example, it is possible to define all the paths from $y(t-1)$ to $y(t)$ just by specifying `from=latent_y[1:(t-1)], to=latent_y[2:t]` inside `mxPath()`.
-
-
 ## Single indicator
-Obtain the example dataset here:
+Obtain the example database here:
 ```{r, echo=FALSE}
 xfun::embed_file('LCSdata.txt')
 ```   
@@ -36,11 +42,7 @@ We will estimate the following model:
 
 
 
-Step 1. If necessary, install `OpenMx`. Then, load the package and dataset: 
-```{r, eval=F}
-install.packages("OpenMx")
-````
-
+Step 1. Load the package and database: 
 ```{r, eval=T, message=F} 
 library(OpenMx)
 dfwide <- read.table("LCSdata.txt")
@@ -72,7 +74,7 @@ LCS.model <- mxModel("Univariate LCS", type = "RAM",
                
     ### LATENT STRUCTURE
       # 1 -> Initial factor and additive component (means)
-      # “one” is used to define intercepts. In this case, the path from “one” to y0 and ya represents the means of these latent variables.
+      # “one” is used to define intercepts. In this case, the paths from “one” to y0 and ya represent the means of these latent variables.
                mxPath(from="one", to=c(y0, ya),
                       arrows=1, free=TRUE, values= 0, labels=c("meany0", "meanya")),
                
@@ -110,26 +112,41 @@ LCS.model <- mxModel("Univariate LCS", type = "RAM",
 Step 4. Estimate the model parameters:
 ``` {r, eval=TRUE, results='hide', echo=T, message=FALSE}
 LCS.fit <- mxRun(LCS.model)
+```
+<details>
+  <summary>Click here to see the results</summary>
+```{r, eval=T, message=F}
 summary(LCS.fit)
 ```
+</details>
 
-## Stochastic extension of the univariate LCS model
-It is possible to include the innovation variance by just adding a new `mxPath()` to the already built LCS.model:
+---
+
+### Stochastic LCS model
+It is possible to extend the previous model to include innovation variance by just adding a new `mxPath()` to the already built `LCS.model`:
 
 ``` {r, eval=TRUE, results='hide', echo=T, message=FALSE}
 stoch_LCS.model <- mxModel(LCS.model, # call the previous model
                            # Dynamic error variance
                            mxPath(from=change_y, arrows=2, free=TRUE, values=0, labels="derY"))
 
-# Run the new model including innovation variance
+# Run the new model:
 stoch_LCS.fit <- mxRun(stoch_LCS.model)
+```
+<details>
+  <summary>Click here to see the results</summary>
+```{r, eval=T, message=F}
 summary(stoch_LCS.fit)
 ```
+</details>
+
+
+---
 
 
 ## Multiple indicators
 
-Obtain the example dataset here:
+Obtain the example database here:
 ```{r, echo=FALSE}
 xfun::embed_file('MILCSdata.txt')
 ```
@@ -137,7 +154,7 @@ xfun::embed_file('MILCSdata.txt')
 We will estimate the following model:  
 ![](MI_LCS.PNG)
 
-Step 1. If necessary, install `OpenMx`. Then, load the package and dataset: 
+Step 1. Load the package and database: 
 ```{r}
 library(OpenMx)
 dfwide <- read.table("MILCSdata.txt")
@@ -159,74 +176,80 @@ change_y <- paste0("Delta_", 2:Tmax)
 Step 3. Build the model:   
 ```{r}
 MI_LCS.model <- mxModel("Multiple Indicator LCS", type = "RAM",
-                        manifestVars = c(indic_Y1, indic_Y2, indic_Y3),
-                        latentVars = c(y0, ya, latent_y, change_y),
-                        mxData(observed = dfwide, type="raw"),
+         manifestVars = c(indic_Y1, indic_Y2, indic_Y3),
+         latentVars = c(y0, ya, latent_y, change_y),
+         mxData(observed = dfwide, type="raw"),
                         
-              ### LATENT STRUCTURE
-                        # 1 -> Initial factors and additive components (means)
-                        # Note that we only estimate the latent mean of the additive component
-                        mxPath(from="one", to=ya, arrows=1, free=TRUE, values= 0, labels="meanya"),
+   ### LATENT STRUCTURE
+         # 1 -> Initial factors and additive components (means)
+         # Note that we only estimate the latent mean of the additive component
+         mxPath(from="one", to=ya, arrows=1, free=TRUE, values= 0, labels="meanya"),
+         
+         # (Co)variances of the initial factors and additive components (covariance structure)
+         mxPath(from=y0, arrows=2, free=TRUE, values=0, labels="vary0"),
+         mxPath(from=ya, arrows=2, free=TRUE, values=0, labels="varya"),
+         mxPath(from=y0, to=ya, 
+                arrows=2, free=TRUE, values=0, labels="covy0ya"),
                         
-                        # (Co)variances of the initial factors and additive components (covariance structure)
-                        mxPath(from=y0, arrows=2, free=TRUE, values=0, labels="vary0"),
-                        mxPath(from=ya, arrows=2, free=TRUE, values=0, labels="varya"),
-                        mxPath(from=y0, to=ya, 
-                               arrows=2, free=TRUE, values=0, labels="covy0ya"),
+         # Initial factor -> Initial latent score
+         mxPath(from=y0, to=latent_y[1], arrows=1, free=FALSE, values=1),
+         
+         # Latent[t-1] -> Latent[t]
+         mxPath(from=latent_y[1:(Tmax-1)], to=latent_y[2:Tmax], 
+                arrows=1, free=FALSE, values=1),
                         
-                        # Initial factor -> Initial latent score
-                        mxPath(from=y0, to=latent_y[1], arrows=1, free=FALSE, values=1),
+         # Additive component -> Change (alpha = 1)
+         mxPath(from=ya, to=change_y, arrows=1, free=FALSE, values=1),
+         
+         # Latent[t-1] -> Change[t] (self-feedback)
+         mxPath(from=latent_y[1:(Tmax-1)], to=change_y, 
+                arrows=1, free=TRUE, values=0, labels="beta"),
               
-                        # Latent[t-1] -> Latent[t]
-                        mxPath(from=latent_y[1:(Tmax-1)], to=latent_y[2:Tmax], 
-                               arrows=1, free=FALSE, values=1),
-                        
-                        # Additive component -> Change (alpha = 1)
-                        mxPath(from=ya, to=change_y, arrows=1, free=FALSE, values=1),
-                        
-                        # Latent[t-1] -> Change[t] (self-feedback)
-                        mxPath(from=latent_y[1:(Tmax-1)], to=change_y, 
-                               arrows=1, free=TRUE, values=0, labels="beta"),
-              
-                        # Change -> Latent
-                        mxPath(from=change_y, to=latent_y[2:Tmax], arrows=1, free=FALSE, values=1),
-              
-                        ## For the stochastic version, include:
-                        # Dynamic error variance (time-invariant)
-                        mxPath(from=change_y, arrows=2, free=TRUE, values=0, labels="derY"),
+         # Change -> Latent
+         mxPath(from=change_y, to=latent_y[2:Tmax], arrows=1, free=FALSE, values=1),
+         
+         ## For the stochastic version, include:
+         # Dynamic error variance (time-invariant)
+         mxPath(from=change_y, arrows=2, free=TRUE, values=0, labels="derY"),
                          
-              # MEASUREMENT STRUCTURE   
-                        # Factor loadings: Configural and weak invariance
-                        mxPath(from=latent_y, to=indic_Y1, arrows=1, free=FALSE, values=1, labels="lambda_Y1"),
-                        mxPath(from=latent_y, to=indic_Y2, arrows=1, free=TRUE, values=0, labels="lambda_Y2"),
-                        mxPath(from=latent_y, to=indic_Y3, arrows=1, free=TRUE, values=0, labels="lambda_Y3"),
-              
-                        # Intercepts of the indicators: Strong invariance
-                        mxPath(from="one", to=indic_Y1, arrows=1, free=TRUE, values=0, labels="tau_Y1"),
-                        mxPath(from="one", to=indic_Y2, arrows=1, free=TRUE, values=0, labels="tau_Y2"),
-                        mxPath(from="one", to=indic_Y3, arrows=1, free=TRUE, values=0, labels="tau_Y3"),
-              
-                        # Measurement error variances (time-invariant)
-                        mxPath(from=indic_Y1, arrows=2, free=TRUE, values=0, labels="mer_Y1"),
-                        mxPath(from=indic_Y2, arrows=2, free=TRUE, values=0, labels="mer_Y2"),
-                        mxPath(from=indic_Y3, arrows=2, free=TRUE, values=0, labels="mer_Y3"))
+   ### MEASUREMENT STRUCTURE   
+         # Factor loadings: Configural and weak invariance
+         mxPath(from=latent_y, to=indic_Y1, arrows=1, free=FALSE, values=1, labels="lambda_Y1"),
+         mxPath(from=latent_y, to=indic_Y2, arrows=1, free=TRUE, values=0, labels="lambda_Y2"),
+         mxPath(from=latent_y, to=indic_Y3, arrows=1, free=TRUE, values=0, labels="lambda_Y3"),
+         
+         # Intercepts of the indicators: Strong invariance
+         mxPath(from="one", to=indic_Y1, arrows=1, free=TRUE, values=0, labels="tau_Y1"),
+         mxPath(from="one", to=indic_Y2, arrows=1, free=TRUE, values=0, labels="tau_Y2"),
+         mxPath(from="one", to=indic_Y3, arrows=1, free=TRUE, values=0, labels="tau_Y3"),
+         
+         # Measurement error variances (time-invariant)
+         mxPath(from=indic_Y1, arrows=2, free=TRUE, values=0, labels="mer_Y1"),
+         mxPath(from=indic_Y2, arrows=2, free=TRUE, values=0, labels="mer_Y2"),
+         mxPath(from=indic_Y3, arrows=2, free=TRUE, values=0, labels="mer_Y3"))
 
 ```
 
 Step 4. Estimate the model parameters:
 `````` {r, eval=TRUE, results='hide', echo=T, message=FALSE}
 MI_LCS.fit <- mxRun(MI_LCS.model)
+```
+<details>
+  <summary>Click here to see the results</summary>
+```{r, eval=T, message=F}
 summary(MI_LCS.fit)
 ```
+</details>
 
 
+---
 
 
 # The Bivariate LCS model {.tabset .tabset-fade}
 
 ## Single indicator
 
-Obtain the example dataset here:
+Obtain the example database here:
 ```{r, echo=FALSE}
 xfun::embed_file('BLCSdata.txt')
 ```   
@@ -234,7 +257,8 @@ xfun::embed_file('BLCSdata.txt')
 We will estimate the following model:  
 ![](stochBLCS.PNG)
 
-Step 1. If necessary, install `OpenMx`. Then, load the package and dataset: 
+
+Step 1. Load the package and database: 
 ```{r, eval=T, message=F} 
 library(OpenMx)
 dfwide <- read.table("BLCSdata.txt")
@@ -242,12 +266,10 @@ dfwide <- read.table("BLCSdata.txt")
 
 Step 2. Define the variables of the model:
 ```{r}
-
 Tmax <- 5 # Number of measurement occasions
 colnames(dfwide) <- c(paste0("X", 1:Tmax), paste0("Y",1:Tmax))
 
-# Create the labels for the latent state at t=0, the additive component, the manifest scores, 
-#their corresponding latent scores, and the latent changes:
+# Create the labels for the latent state at t=0, the additive component, the manifest scores, their corresponding latent scores, and the latent changes:
 x0 <- "x0"
 xa <- "xa"
 y0 <- "y0"
@@ -264,61 +286,60 @@ change_y <- paste0("Delta_y", 2:Tmax)
 Step 3. Build the model:   
 ```{r}
 BLCS.model <- mxModel("Bivariate LCS", type="RAM",
-                manifestVars=c(manif_Y, manif_X),
-                latentVars=c(x0, xa, y0, ya, latent_x, latent_y, change_x, change_y),
-                mxData(observed = dfwide, type="raw"),
+      manifestVars=c(manif_Y, manif_X),
+      latentVars=c(x0, xa, y0, ya, latent_x, latent_y, change_x, change_y),
+      mxData(observed = dfwide, type="raw"),
                 
-      ### LATENT STRUCTURE
-                # 1 -> Initial factors and additive components (means)
-                mxPath(from="one", to=c(x0, xa, y0, ya),
-                       arrows=1, free=TRUE, values= 0, labels=c("meanx0", "meanxa", "meany0", "meanya")),
+### LATENT STRUCTURE
+      # 1 -> Initial factors and additive components (means)
+      mxPath(from="one", to=c(x0, xa, y0, ya),
+             arrows=1, free=TRUE, values= 0, labels=c("meanx0", "meanxa", "meany0", "meanya")),
                 
-                # (Co)variances of the initial factors and additive components
-                mxPath(from="x0", arrows=2, free=TRUE, values=0, labels="varx0"),
-                mxPath(from="xa", arrows=2, free=TRUE, values=0, labels="varxa"),
-                mxPath(from="y0", arrows=2, free=TRUE, values=0, labels="vary0"),
-                mxPath(from="ya", arrows=2, free=TRUE, values=0, labels="varya"),
-                mxPath(from="x0", to="y0", arrows=2, free=TRUE, values=0, labels="covx0y0"),
-                mxPath(from="x0", to="xa", arrows=2, free=TRUE, values=0, labels="covx0xa"),
-                mxPath(from="x0", to="ya", arrows=2, free=TRUE, values=0, labels="covx0ya"),
-                mxPath(from="xa", to="y0", arrows=2, free=TRUE, values=0, labels="covxay0"),
-                mxPath(from="xa", to="ya", arrows=2, free=TRUE, values=0, labels="covxaya"),
-                mxPath(from="y0", to="ya", arrows=2, free=TRUE, values=0, labels="covy0ya"),
-                
-                # Initial factor -> Initial latent score
-                mxPath(from=x0, to=latent_x[1], arrows=1, free=FALSE, values=1),
-                mxPath(from=y0, to=latent_y[1], arrows=1, free=FALSE, values=1),
+      # (Co)variances of the initial factors and additive components
+      mxPath(from="x0", arrows=2, free=TRUE, values=0, labels="varx0"),
+      mxPath(from="xa", arrows=2, free=TRUE, values=0, labels="varxa"),
+      mxPath(from="y0", arrows=2, free=TRUE, values=0, labels="vary0"),
+      mxPath(from="ya", arrows=2, free=TRUE, values=0, labels="varya"),
+      mxPath(from="x0", to="y0", arrows=2, free=TRUE, values=0, labels="covx0y0"),
+      mxPath(from="x0", to="xa", arrows=2, free=TRUE, values=0, labels="covx0xa"),
+      mxPath(from="x0", to="ya", arrows=2, free=TRUE, values=0, labels="covx0ya"),
+      mxPath(from="xa", to="y0", arrows=2, free=TRUE, values=0, labels="covxay0"),
+      mxPath(from="xa", to="ya", arrows=2, free=TRUE, values=0, labels="covxaya"),
+      mxPath(from="y0", to="ya", arrows=2, free=TRUE, values=0, labels="covy0ya"),
+              
+      # Initial factor -> Initial latent score
+      mxPath(from=x0, to=latent_x[1], arrows=1, free=FALSE, values=1),
+      mxPath(from=y0, to=latent_y[1], arrows=1, free=FALSE, values=1),
 
+      # Latent[t-1] -> Latent[t]
+      mxPath(from=latent_x[1:(Tmax-1)], to=latent_x[2:Tmax], arrows=1, free=FALSE, values=1),
+      mxPath(from=latent_y[1:(Tmax-1)], to=latent_y[2:Tmax], arrows=1, free=FALSE, values=1),
       
-                # Latent[t-1] -> Latent[t]
-                mxPath(from=latent_x[1:(Tmax-1)], to=latent_x[2:Tmax], arrows=1, free=FALSE, values=1),
-                mxPath(from=latent_y[1:(Tmax-1)], to=latent_y[2:Tmax], arrows=1, free=FALSE, values=1),
-      
-                # Additive component -> Change (alpha = 1)
-                mxPath(from=xa, to=change_x, arrows=1, free=FALSE, values=1),
-                mxPath(from=ya, to=change_y, arrows=1, free=FALSE, values=1),
+      # Additive component -> Change (alpha = 1)
+      mxPath(from=xa, to=change_x, arrows=1, free=FALSE, values=1),
+      mxPath(from=ya, to=change_y, arrows=1, free=FALSE, values=1),
 
                 
-                # Latent[t-1] -> Change[t] (self-feedbacks)
-                mxPath(from=latent_x[1:(Tmax-1)], to=change_x, arrows=1, free=TRUE, values=0, labels="beta_x"),
-                mxPath(from=latent_y[1:(Tmax-1)], to=change_y, arrows=1, free=TRUE, values=0, labels="beta_y"),
+      # Latent[t-1] -> Change[t] (self-feedbacks)
+      mxPath(from=latent_x[1:(Tmax-1)], to=change_x, arrows=1, free=TRUE, values=0, labels="beta_x"),
+      mxPath(from=latent_y[1:(Tmax-1)], to=change_y, arrows=1, free=TRUE, values=0, labels="beta_y"),
       
-                # Latent[t-1] -> Change[t] (couplings)
-                mxPath(from=latent_x[1:(Tmax-1)], to=change_y, arrows=1, free=TRUE, values=0, labels="gamma_y"),
-                mxPath(from=latent_y[1:(Tmax-1)], to=change_x, arrows=1, free=TRUE, values=0, labels="gamma_x"),
+      # Latent[t-1] -> Change[t] (couplings)
+      mxPath(from=latent_x[1:(Tmax-1)], to=change_y, arrows=1, free=TRUE, values=0, labels="gamma_y"),
+      mxPath(from=latent_y[1:(Tmax-1)], to=change_x, arrows=1, free=TRUE, values=0, labels="gamma_x"),
       
-                # Change -> Latent
-                mxPath(from=change_x, to=latent_x[2:Tmax], arrows=1, free=FALSE, values=1),
-                mxPath(from=change_y, to=latent_y[2:Tmax], arrows=1, free=FALSE, values=1),
+      # Change -> Latent
+      mxPath(from=change_x, to=latent_x[2:Tmax], arrows=1, free=FALSE, values=1),
+      mxPath(from=change_y, to=latent_y[2:Tmax], arrows=1, free=FALSE, values=1),
       
-      ### MEASUREMENT STRUCTURE   
-                # Latent -> Manifest
-                mxPath(from=c(latent_x, latent_y), to=c(manif_X, manif_Y), arrows=1, free=FALSE, values=1),
-                
-                # Measurement errors variances and covariance
-                mxPath(from=manif_X, arrows=2, free=TRUE, values=.5, labels="merX"),
-                mxPath(from=manif_Y, arrows=2, free=TRUE, values=.5, labels="merY"),
-                mxPath(from=manif_X, to=manif_X, arrows=2, free=TRUE, values=0, labels="covMer"))
+### MEASUREMENT STRUCTURE   
+      # Latent -> Manifest
+      mxPath(from=c(latent_x, latent_y), to=c(manif_X, manif_Y), arrows=1, free=FALSE, values=1),
+              
+      # Measurement errors variances and covariance
+      mxPath(from=manif_X, arrows=2, free=TRUE, values=.5, labels="merX"),
+      mxPath(from=manif_Y, arrows=2, free=TRUE, values=.5, labels="merY"),
+      mxPath(from=manif_X, to=manif_X, arrows=2, free=TRUE, values=0, labels="covMer"))
 ```
  
 
@@ -326,25 +347,41 @@ Step 4. Estimate the model parameters:
 ``` {r, eval=TRUE, results='hide', echo=T, message=F}
 
 BLCS.fit <- mxRun(BLCS.model)
+```
+<details>
+  <summary>Click here to see the results</summary>
+```{r, eval=T, message=F}
 summary(BLCS.fit)
 ```
+</details>
 
-## Stochastic extension of the bivariate LCS model
 
-It is possible to include the innovation variance by just adding a new `mxPath()` to the already built BLCS.model:
-``` {r, eval=TRUE, results='hide', echo=T, message=FALSE}
+---
+
+### Stochastic BLCS model
+
+It is possible to extend the previous model to include innovation variances and covariance by just adding a new mxPath() to the already built BLCS.model:
+``` {r, eval=TRUE, message=FALSE}
 stoch_BLCS.model <- mxModel(BLCS.model, # call the previous model
-                            # Dynamic error variances and covariance
-                            mxPath(from=change_x, arrows=2, free=TRUE, values=0, labels="derX"),
-                            mxPath(from=change_y, arrows=2, free=TRUE, values=0, labels="derY"),
-                            mxPath(from=change_x, to=change_y, arrows=2, free=TRUE, values=0, labels="covDer"))
-# Run the new model including innovations variances and covariance
+     # Dynamic error variances and covariance
+     mxPath(from=change_x, arrows=2, free=TRUE, values=0, labels="derX"),
+     mxPath(from=change_y, arrows=2, free=TRUE, values=0, labels="derY"),
+     mxPath(from=change_x, to=change_y, arrows=2, free=TRUE, values=0, labels="covDer"))
+
+# Run the new model:
 stoch_BLCS.fit <- mxRun(stoch_BLCS.model) 
+```
+<details>
+  <summary>Click here to see the results</summary>
+```{r, eval=T, message=F}
 summary(stoch_BLCS.fit)
 ```
+</details>
+
+---
 
 ## Multiple Indicators
-Obtain the example dataset here:
+Obtain the example database here:
 ```{r, echo=FALSE}
 xfun::embed_file('MIBLCSdata.txt')
 ```
@@ -352,7 +389,7 @@ xfun::embed_file('MIBLCSdata.txt')
 We will estimate the following model: 
 ![](MI_BLCS.PNG)
 
-Step 1. If necessary, install `OpenMx`. Then, load the package and dataset: 
+Step 1. Load the package and database: 
 ```{r}
 library(OpenMx)
 dfwide <- read.table("MIBLCSdata.txt")
@@ -368,7 +405,6 @@ y0 <- "y0"
 ya <- "ya"
 indic_X1 <- paste0("X1_t", 1:Tmax)
 indic_X2 <- paste0("X2_t", 1:Tmax)
-# indic_X3 <- paste0("X3_t", 1:Tmax)
 indic_Y1 <- paste0("Y1_t", 1:Tmax)
 indic_Y2 <- paste0("Y2_t", 1:Tmax)
 indic_Y3 <- paste0("Y3_t", 1:Tmax)
@@ -381,97 +417,93 @@ change_y <- paste0("Delta_y", 2:Tmax)
 Step 3. Build the model:   
 ```{r}
 MI_BLCS.model <- mxModel("Bivariate LCS", type="RAM",
-                      manifestVars=c(indic_X1, indic_X2, indic_Y1, indic_Y2, indic_Y3),
-                      latentVars=c(x0, xa, y0, ya, latent_x, latent_y, change_x, change_y),
-                      mxData(observed = dfwide, type="raw"),
+      manifestVars=c(indic_X1, indic_X2, indic_Y1, indic_Y2, indic_Y3),
+      latentVars=c(x0, xa, y0, ya, latent_x, latent_y, change_x, change_y),
+      mxData(observed = dfwide, type="raw"),
                       
-    ### LATENT STRUCTURE
-              # 1 -> Initial factors and additive components (means)
-              mxPath(from="one", to=c(xa, ya),
-                             arrows=1, free=TRUE, values= 0, labels=c("meanxa", "meanya")),
+### LATENT STRUCTURE
+      # 1 -> Initial factors and additive components (means)
+      mxPath(from="one", to=c(xa, ya),
+             arrows=1, free=TRUE, values= 0, labels=c("meanxa", "meanya")),
                       
-              # Covariance structure of the latent initial conditions
+      # Covariance structure of the latent initial conditions
 
-              mxPath(from="x0", arrows=2, free=TRUE, values=0, labels="varx0"),
-              mxPath(from="xa", arrows=2, free=TRUE, values=0, labels="varxa"),
-              mxPath(from="y0", arrows=2, free=TRUE, values=0, labels="vary0"),
-              mxPath(from="ya", arrows=2, free=TRUE, values=0, labels="varya"),
-              mxPath(from="x0", to="y0", arrows=2, free=TRUE, values=0, labels="covx0y0"),
-              mxPath(from="x0", to="xa", arrows=2, free=TRUE, values=0, labels="covx0xa"),
-              mxPath(from="x0", to="ya", arrows=2, free=TRUE, values=0, labels="covx0ya"),
-              mxPath(from="xa", to="y0", arrows=2, free=TRUE, values=0, labels="covxay0"),
-              mxPath(from="xa", to="ya", arrows=2, free=TRUE, values=0, labels="covxaya"),
-              mxPath(from="y0", to="ya", arrows=2, free=TRUE, values=0, labels="covy0ya"),
+      mxPath(from="x0", arrows=2, free=TRUE, values=0, labels="varx0"),
+      mxPath(from="xa", arrows=2, free=TRUE, values=0, labels="varxa"),
+      mxPath(from="y0", arrows=2, free=TRUE, values=0, labels="vary0"),
+      mxPath(from="ya", arrows=2, free=TRUE, values=0, labels="varya"),
+      mxPath(from="x0", to="y0", arrows=2, free=TRUE, values=0, labels="covx0y0"),
+      mxPath(from="x0", to="xa", arrows=2, free=TRUE, values=0, labels="covx0xa"),
+      mxPath(from="x0", to="ya", arrows=2, free=TRUE, values=0, labels="covx0ya"),
+      mxPath(from="xa", to="y0", arrows=2, free=TRUE, values=0, labels="covxay0"),
+      mxPath(from="xa", to="ya", arrows=2, free=TRUE, values=0, labels="covxaya"),
+      mxPath(from="y0", to="ya", arrows=2, free=TRUE, values=0, labels="covy0ya"),
                       
-              # Initial factor -> Initial latent score
-              mxPath(from=x0, to=latent_x[1], arrows=1, free=FALSE, values=1),
-              mxPath(from=y0, to=latent_y[1], arrows=1, free=FALSE, values=1),
+      # Initial factor -> Initial latent score
+      mxPath(from=x0, to=latent_x[1], arrows=1, free=FALSE, values=1),
+      mxPath(from=y0, to=latent_y[1], arrows=1, free=FALSE, values=1),
             
-              # Latent[t-1] -> Latent[t]
-              mxPath(from=latent_x[1:(Tmax-1)], to=latent_x[2:Tmax], arrows=1, free=FALSE, values=1),
-              mxPath(from=latent_y[1:(Tmax-1)], to=latent_y[2:Tmax], arrows=1, free=FALSE, values=1),
-            
-              # Additive component -> Change (alpha = 1)
-              mxPath(from=xa, to=change_x, arrows=1, free=FALSE, values=1),
-              mxPath(from=ya, to=change_y, arrows=1, free=FALSE, values=1),
+      # Latent[t-1] -> Latent[t]
+      mxPath(from=latent_x[1:(Tmax-1)], to=latent_x[2:Tmax], arrows=1, free=FALSE, values=1),
+      mxPath(from=latent_y[1:(Tmax-1)], to=latent_y[2:Tmax], arrows=1, free=FALSE, values=1),
+          
+      # Additive component -> Change (alpha = 1)
+      mxPath(from=xa, to=change_x, arrows=1, free=FALSE, values=1),
+      mxPath(from=ya, to=change_y, arrows=1, free=FALSE, values=1),
                       
-              # Latent[t-1] -> Change[t] (self-feedbacks)
-              mxPath(from=latent_x[1:(Tmax-1)], to=change_x, arrows=1, free=TRUE, values=0, labels="beta_x"),
-              mxPath(from=latent_y[1:(Tmax-1)], to=change_y, arrows=1, free=TRUE, values=0, labels="beta_y"),
-            
-              # Latent[t-1] -> Change[t] (couplings)
-              mxPath(from=latent_x[1:(Tmax-1)], to=change_y, arrows=1, free=TRUE, values=0, labels="gamma_y"),
-              mxPath(from=latent_y[1:(Tmax-1)], to=change_x, arrows=1, free=TRUE, values=0, labels="gamma_x"),
+      # Latent[t-1] -> Change[t] (self-feedbacks)
+      mxPath(from=latent_x[1:(Tmax-1)], to=change_x, arrows=1, free=TRUE, values=0, labels="beta_x"),
+      mxPath(from=latent_y[1:(Tmax-1)], to=change_y, arrows=1, free=TRUE, values=0, labels="beta_y"),
+          
+      # Latent[t-1] -> Change[t] (couplings)
+      mxPath(from=latent_x[1:(Tmax-1)], to=change_y, arrows=1, free=TRUE, values=0, labels="gamma_y"),
+      mxPath(from=latent_y[1:(Tmax-1)], to=change_x, arrows=1, free=TRUE, values=0, labels="gamma_x"),
 
-              # Change -> Latent
-              mxPath(from=change_x, to=latent_x[2:Tmax], arrows=1, free=FALSE, values=1),
-              mxPath(from=change_y, to=latent_y[2:Tmax], arrows=1, free=FALSE, values=1),
+      # Change -> Latent
+      mxPath(from=change_x, to=latent_x[2:Tmax], arrows=1, free=FALSE, values=1),
+      mxPath(from=change_y, to=latent_y[2:Tmax], arrows=1, free=FALSE, values=1),
             
-              ## For the stochastic version, include:
-              # Dynamic error variances and covariance (time-invariant)
-              mxPath(from=change_x, arrows=2, free=TRUE, values=0, labels="derX"),
-              mxPath(from=change_y, arrows=2, free=TRUE, values=0, labels="derY"),
-              mxPath(from=change_x, to=change_y, arrows=2, free=TRUE, values=0, labels="covDer"),
+      ## For the stochastic version, include:
+      # Dynamic error variances and covariance (time-invariant)
+      mxPath(from=change_x, arrows=2, free=TRUE, values=0, labels="derX"),
+      mxPath(from=change_y, arrows=2, free=TRUE, values=0, labels="derY"),
+      mxPath(from=change_x, to=change_y, arrows=2, free=TRUE, values=0, labels="covDer"),
             
-      ## MEASUREMENT STRUCTURE   
-              # Factor loadings: Configural and weak invariance
-              mxPath(from=latent_x, to=indic_X1, arrows=1, free=FALSE, values=1, labels="lambda_X1"),
-              mxPath(from=latent_x, to=indic_X2, arrows=1, free=TRUE, values=0, labels="lambda_X2"),
-              # mxPath(from=latent_x, to=indic_X3, arrows=1, free=TRUE, values=0, labels="lambda_X3"),    
-              mxPath(from=latent_y, to=indic_Y1, arrows=1, free=FALSE, values=1, labels="lambda_Y1"),
-              mxPath(from=latent_y, to=indic_Y2, arrows=1, free=TRUE, values=0, labels="lambda_Y2"),
-              mxPath(from=latent_y, to=indic_Y3, arrows=1, free=TRUE, values=0, labels="lambda_Y3"),
+## MEASUREMENT STRUCTURE   
+      # Factor loadings: Configural and weak invariance
+      mxPath(from=latent_x, to=indic_X1, arrows=1, free=FALSE, values=1, labels="lambda_X1"),
+      mxPath(from=latent_x, to=indic_X2, arrows=1, free=TRUE, values=0, labels="lambda_X2"),
+      mxPath(from=latent_y, to=indic_Y1, arrows=1, free=FALSE, values=1, labels="lambda_Y1"),
+      mxPath(from=latent_y, to=indic_Y2, arrows=1, free=TRUE, values=0, labels="lambda_Y2"),
+      mxPath(from=latent_y, to=indic_Y3, arrows=1, free=TRUE, values=0, labels="lambda_Y3"),
         
-              # Intercepts of the indicators: Strong invariance
-              mxPath(from="one", to=indic_X1, arrows=1, free=TRUE, values=0, labels="tau_X1"),
-              mxPath(from="one", to=indic_X2, arrows=1, free=TRUE, values=0, labels="tau_X2"),
-              # mxPath(from="one", to=indic_X3, arrows=1, free=TRUE, values=0, labels="tau_X3"),
-              mxPath(from="one", to=indic_Y1, arrows=1, free=TRUE, values=0, labels="tau_Y1"),
-              mxPath(from="one", to=indic_Y2, arrows=1, free=TRUE, values=0, labels="tau_Y2"),
-              mxPath(from="one", to=indic_Y3, arrows=1, free=TRUE, values=0, labels="tau_Y3"),
+      # Intercepts of the indicators: Strong invariance
+      mxPath(from="one", to=indic_X1, arrows=1, free=TRUE, values=0, labels="tau_X1"),
+      mxPath(from="one", to=indic_X2, arrows=1, free=TRUE, values=0, labels="tau_X2"),
+      mxPath(from="one", to=indic_Y1, arrows=1, free=TRUE, values=0, labels="tau_Y1"),
+      mxPath(from="one", to=indic_Y2, arrows=1, free=TRUE, values=0, labels="tau_Y2"),
+      mxPath(from="one", to=indic_Y3, arrows=1, free=TRUE, values=0, labels="tau_Y3"),
             
-              # Measurement error variances and covariances (time-invariant)
-              mxPath(from=indic_X1, arrows=2, free=TRUE, values=0, labels="mer_X1"),
-              mxPath(from=indic_X2, arrows=2, free=TRUE, values=0, labels="mer_X2"),
-              # mxPath(from=indic_X3, arrows=2, free=TRUE, values=0, labels="mer_X3"),                      
-              mxPath(from=indic_Y1, arrows=2, free=TRUE, values=0, labels="mer_Y1"),
-              mxPath(from=indic_Y2, arrows=2, free=TRUE, values=0, labels="mer_Y2"),
-              mxPath(from=indic_Y3, arrows=2, free=TRUE, values=0, labels="mer_Y3")
-            # mxPath(from=indic_X1, to=indic_Y1, arrows=2, free=TRUE, values=.5, labels="covMer1"),
-            # mxPath(from=indic_X2, to=indic_Y2, arrows=2, free=TRUE, values=.5, labels="covMer2"),
-            # mxPath(from=indic_X3, to=indic_Y3, arrows=2, free=TRUE, values=.5, labels="covMer3")
+      # Measurement error variances (time-invariant)
+      mxPath(from=indic_X1, arrows=2, free=TRUE, values=0, labels="mer_X1"),
+      mxPath(from=indic_X2, arrows=2, free=TRUE, values=0, labels="mer_X2"),
+      mxPath(from=indic_Y1, arrows=2, free=TRUE, values=0, labels="mer_Y1"),
+      mxPath(from=indic_Y2, arrows=2, free=TRUE, values=0, labels="mer_Y2"),
+      mxPath(from=indic_Y3, arrows=2, free=TRUE, values=0, labels="mer_Y3")
             )
 
 ```
 
 Step 4. Estimate the model parameters: 
 ``` {r, eval=TRUE, results='hide', echo=T, message=F}
-
 MI_BLCS.fit <- mxRun(MI_BLCS.model)
+```
+<details>
+  <summary>Click here to see the results</summary>
+```{r, eval=T, message=F}
 summary(MI_BLCS.fit)
 ```
-
-
-
+</details>
 
 ---
+

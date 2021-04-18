@@ -1,16 +1,27 @@
 ---
-title: "lavaan"
+title: 'Building LCS models with lavaan'
 output: 
   html_document:
     toc: true
     toc_float: true
 ---
+
 ## 
 ##
+
+
+In `lavaan`, models are built with a single block of syntax. Regressions are defined with the tilde `~`, variances and covariances with a double tilde `~~`, and intercepts with `~ 1`. To define the latent variables, we use the special operator `=~`, which can be read as <em>"measured by"</em> or <em>"manifested as"</em>. 
+
+To indicate that a path is fixed, we use an asterisk `*`. For example, in `lx2 ~ 1*lx1`, the regression path from `lx1` to `lx2` is fixed to 1. To name a free parameter, we combine the asterisk `*` with `label("")`. For example, `X1 ~~ label("merX")*X1` means that the variance of X1 is freely estimated and labeled "merX". We can use the same label for multiple parameters to impose an equality constraint across them.
+
+If necessary, install `lavaan`:
+```{r, eval=F}
+install.packages("lavaan")
+````
+
+---
+
 # The Univariate LCS model {.tabset .tabset-fade}
-
-In `lavaan`, models are described with a single block of syntax. Regressions are defined with the tilde `~`, variances and covariances with a double tilde `~~`, and intercepts with `~ 1`. To define the latent variables, we use the special operator `=~`, which can be read as <em>measured</em> <em>by</em>.
-
 
 ## Single indicator
 Obtain the example dataset here:
@@ -22,21 +33,18 @@ We will estimate the following model:
 ![](stochLCS.PNG)
 
 
-Step 1. If necessary, install `lavaan`. Then, load the package and dataset: 
-```{r, eval=F}
-install.packages("lavaan")
-````
-
+Step 1. Load the package and database: 
 ```{r, eval=T, message=F} 
 library(lavaan)
 dfwide <- read.table("LCSdata.txt")
 ```
 
-Step 2. Define the variables of the model:
+Step 2. If necessary, name the variables in the database:
 ```{r}
 Tmax <- 5 # Number of measurement occasions
 colnames(dfwide) <- paste0("Y", 1:Tmax)
 ```
+You can use other names for the observed variables, but make sure to use the same names when building the model.
 
 Step 3. Build the model:  
 ```{r}
@@ -54,7 +62,7 @@ LCS.model <- '
  	ly3 ~ 1*ly2
  	ly4 ~ 1*ly3
  	ly5 ~ 1*ly4
-# Additive component -> Change (alpha = 1)
+# Additive component -> Change
 	 ya =~ 1*dy2 + 1*dy3 + 1*dy4 + 1*dy5 
 # Latent -> Change (self-feedback)
 	dy2 ~ label("beta")*ly1
@@ -86,14 +94,21 @@ LCS.model <- '
 	dy2 ~~ label("derY")*dy2
  	dy3 ~~ label("derY")*dy3
  	dy4 ~~ label("derY")*dy4
- 	dy5 ~~ label("derY")*dy5'
+ 	dy5 ~~ label("derY")*dy5
+'
 ```
 Step 4. Estimate the model parameters:
-```{r, eval=F, message=F}
+```{r, eval=T, message=F}
 LCS.fit <- lavaan(LCS.model, data=dfwide)
-
+```
+<details>
+  <summary>Click here to see the results</summary>
+```{r, eval=T, message=F}
 summary(LCS.fit, standardized = T)
 ```
+</details>
+
+---
 
 ## Multiple indicators
 
@@ -105,16 +120,19 @@ xfun::embed_file('MILCSdata.txt')
 We will estimate the following model:  
 ![](MI_LCS.PNG)
 
-Step 1. If necessary, install `lavaan`. Then, load the package and dataset: 
+Step 1. Load the package and database: 
 ```{r}
 library(lavaan)
 dfwide <- read.table("MILCSdata.txt")
 ```
 
-Step 2. Define the variables of the model:
+Step 2. If necessary, name the variables in the database:
 ```{r}
 Tmax <- 5 # Number of measurement occasions
+n_indic <- 3
+colnames(dfwide) <- paste0(rep(paste0("Y", 1:n_indic, "_t"), each=Tmax), 1:Tmax)
 ```
+When building the model, we will refer to the observed variables as Y1_t1, Y2_t1, Y1_t3..., where the first number identifies the indicator and the second identifies the measurement occasion.
 
 Step 3. Build the model:    
 ```{r}
@@ -133,7 +151,7 @@ MI_LCS.model <- '
  	ly3 ~ 1*ly2
  	ly4 ~ 1*ly3
  	ly5 ~ 1*ly4
-# Additive component -> Change (alpha = 1)
+# Additive component -> Change
 	 ya =~ 1*dy2 + 1*dy3 + 1*dy4 + 1*dy5 
 # Latent -> Change (self-feedback)
 	dy2 ~ label("beta")*ly1
@@ -179,17 +197,22 @@ MI_LCS.model <- '
 	dy2 ~~ label("derY")*dy2
  	dy3 ~~ label("derY")*dy3
  	dy4 ~~ label("derY")*dy4
- 	dy5 ~~ label("derY")*dy5'
+ 	dy5 ~~ label("derY")*dy5
+'
 ```
 
 Step 4. Estimate the model parameters:
 ``` {r, eval=TRUE, results='hide', echo=T, message=F}
-MI_LCS.fit <- lavaan(MI_LCS.model, data=dfwide, meanstructure=T, int.ov.free=T)
+MI_LCS.fit <- lavaan(MI_LCS.model, data=dfwide)
+```
+<details>
+  <summary>Click here to see the results</summary>
+```{r, eval=T, message=F}
 summary(MI_LCS.fit, standardized = T)
 ```
+</details>
 
-
-
+---
 
 # The Bivariate LCS model {.tabset .tabset-fade}
 
@@ -204,20 +227,18 @@ We will estimate the following model:
 ![](stochBLCS.PNG)
 
 
-
-Step 1. If necessary, install `lavaan`. Then, load the package and dataset: 
-```{r, eval=F}
-install.packages("lavaan")
+Step 1. Load the package and database: 
 ```{r, eval=T, message=F} 
 library(lavaan)
 dfwide <- read.table("BLCSdata.txt")
 ```
 
-Step 2. Define the variables of the model:
+Step 2. If necessary, name the variables in the database:
 ```{r}
 Tmax <- 5 # Number of measurement occasions
 colnames(dfwide) <- c(paste0("X", 1:Tmax), paste0("Y", 1:Tmax))
 ```
+You can use other names for the observed variables, but make sure to use the same names when building the model.
 
 Step 3. Build the model:   
 ```{r}
@@ -242,7 +263,7 @@ BLCS.model <- '
  	ly3 ~ 1*ly2
  	ly4 ~ 1*ly3
  	ly5 ~ 1*ly4
-# Additive component -> Change (alpha = 1)
+# Additive component -> Change
 	 xa =~ 1*dx2 + 1*dx3 + 1*dx4 + 1*dx5
 	 ya =~ 1*dy2 + 1*dy3 + 1*dy4 + 1*dy5 
 # Latent -> Change (self-feedbacks)
@@ -301,11 +322,6 @@ BLCS.model <- '
  	X3 ~~ label("covMer")*Y3
  	X4 ~~ label("covMer")*Y4
  	X5 ~~ label("covMer")*Y5
-# In a LCS model, the means of the variables  are defined by the latent level at t=0 and the additive component. 
-#However, lavaan automatically estimates the intercepts of the observed variables across all time points. 
-#To avoid this redundancy, we must fix the intercepts of the observed variables to 0:
-	 X1 + X2 + X3 + X4 + X5 ~ 0*1 
-	 Y1 + Y2 + Y3 + Y4 + Y5 ~ 0*1 
 
 ### For the stochastic version of the model, include:
 # Dynamic error variances and covariances (time-invariant constraints)
@@ -320,15 +336,22 @@ BLCS.model <- '
 	dx2 ~~ label("covDer")*dy2
  	dx3 ~~ label("covDer")*dy3
  	dx4 ~~ label("covDer")*dy4
- 	dx5 ~~ label("covDer")*dy5'
+ 	dx5 ~~ label("covDer")*dy5
+'
 ```
 
 Step 4. Estimate the model parameters:
 ``` {r, eval=TRUE, results='hide', echo=T, message=F}
-BLCS.fit <- lavaan(BLCS.model, data=dfwide, meanstructure=T, int.ov.free=T)
-
+BLCS.fit <- lavaan(BLCS.model, data=dfwide)
+```
+<details>
+  <summary>Click here to see the results</summary>
+```{r, eval=T, message=F}
 summary(BLCS.fit, standardized = T)
 ```
+</details>
+
+---
 
 ## Multiple Indicators
 Obtain the example dataset here:
@@ -339,16 +362,23 @@ xfun::embed_file('MIBLCSdata.txt')
 We will estimate the following model: 
 ![](MI_BLCS.PNG)
 
-Step 1. If necessary, install `lavaan`. Then, load the package and dataset: 
+Step 1. Load the package and dataset: 
 ```{r}
 library(lavaan)
 dfwide <- read.table("MIBLCSdata.txt")
 ```
 
-Step 2. Define the variables of the model:
+Step 2. If necessary, name the variables in the database:
 ```{r}
 Tmax <- 5 # Number of measurement occasions
+n_indicx <- 2
+n_indicy <- 3
+Xnames <- paste0(rep(paste0("X", 1:n_indicx, "_t"), each=Tmax), 1:Tmax)
+Ynames <- paste0(rep(paste0("Y", 1:n_indicy, "_t"), each=Tmax), 1:Tmax)
+
+colnames(dfwide) <- c(Xnames, Ynames)
 ```
+When building the model, we will refer to the observed variables as X1_t1, X2_t1, X1_t3... and Y1_t1, Y2_t1, Y1_t3..., where the first number identifies the indicator and the second identifies the measurement occasion.
 
 Step 3. Build the model:    
 ```{r}
@@ -374,7 +404,7 @@ MI_BLCS.model <-'
  	ly3 ~ 1*ly2
  	ly4 ~ 1*ly3
  	ly5 ~ 1*ly4
-# Additive component -> Change (alpha = 1)
+# Additive component -> Change
 	 xa =~ 1*dx2 + 1*dx3 + 1*dx4 + 1*dx5 
 	 ya =~ 1*dy2 + 1*dy3 + 1*dy4 + 1*dy5 
 # Latent -> Change (self-feedbacks)
@@ -407,16 +437,16 @@ MI_BLCS.model <-'
 
 ### Measurement structure
 # Factor loadings: Configural and weak invariance
-	lx1 =~ label("lambda_X1")*X1_t1 + label("lambda_X2")*X2_t1 
-	lx2 =~ label("lambda_X1")*X1_t2 + label("lambda_X2")*X2_t2 
-	lx3 =~ label("lambda_X1")*X1_t3 + label("lambda_X2")*X2_t3 
-	lx4 =~ label("lambda_X1")*X1_t4 + label("lambda_X2")*X2_t4 
-	lx5 =~ label("lambda_X1")*X1_t5 + label("lambda_X2")*X2_t5 
-	ly1 =~ label("lambda_Y1")*Y1_t1 + label("lambda_Y2")*Y2_t1 + label("lambda_Y3")*Y3_t1 
-	ly2 =~ label("lambda_Y1")*Y1_t2 + label("lambda_Y2")*Y2_t2 + label("lambda_Y3")*Y3_t2 
-	ly3 =~ label("lambda_Y1")*Y1_t3 + label("lambda_Y2")*Y2_t3 + label("lambda_Y3")*Y3_t3 
-	ly4 =~ label("lambda_Y1")*Y1_t4 + label("lambda_Y2")*Y2_t4 + label("lambda_Y3")*Y3_t4 
-	ly5 =~ label("lambda_Y1")*Y1_t5 + label("lambda_Y2")*Y2_t5 + label("lambda_Y3")*Y3_t5 
+	lx1 =~ 1*X1_t1 + label("lambda_X2")*X2_t1 
+	lx2 =~ 1*X1_t2 + label("lambda_X2")*X2_t2 
+	lx3 =~ 1*X1_t3 + label("lambda_X2")*X2_t3 
+	lx4 =~ 1*X1_t4 + label("lambda_X2")*X2_t4 
+	lx5 =~ 1*X1_t5 + label("lambda_X2")*X2_t5 
+	ly1 =~ 1*Y1_t1 + label("lambda_Y2")*Y2_t1 + label("lambda_Y3")*Y3_t1 
+	ly2 =~ 1*Y1_t2 + label("lambda_Y2")*Y2_t2 + label("lambda_Y3")*Y3_t2 
+	ly3 =~ 1*Y1_t3 + label("lambda_Y2")*Y2_t3 + label("lambda_Y3")*Y3_t3 
+	ly4 =~ 1*Y1_t4 + label("lambda_Y2")*Y2_t4 + label("lambda_Y3")*Y3_t4 
+	ly5 =~ 1*Y1_t5 + label("lambda_Y2")*Y2_t5 + label("lambda_Y3")*Y3_t5 
 # Intercepts of the indicators: Strong invariance
 	 X1_t1 + X1_t2 + X1_t3 + X1_t4 + X1_t5 ~ label("tau_X1")*1 
 	 X2_t1 + X2_t2 + X2_t3 + X2_t4 + X2_t5 ~ label("tau_X2")*1 
@@ -449,7 +479,8 @@ MI_BLCS.model <-'
 	Y1_t5 ~~ label("merY1")*Y1_t5
  	Y2_t5 ~~ label("merY2")*Y2_t5
  	Y3_t5 ~~ label("merY3")*Y3_t5
- 	### For the stochastic version of the model, include:
+ 	
+### For the stochastic version of the model, include:
 # Dynamic error variances and covariances (time-invariant)
 	dx2 ~~ label("derX")*dx2
  	dx3 ~~ label("derX")*dx3
@@ -462,15 +493,19 @@ MI_BLCS.model <-'
 	dx2 ~~ label("covDer")*dy2
  	dx3 ~~ label("covDer")*dy3
  	dx4 ~~ label("covDer")*dy4
- 	dx5 ~~ label("covDer")*dy5'
+ 	dx5 ~~ label("covDer")*dy5
+'
 ```
 
 Step 4. Estimate the model parameters:
 ``` {r, eval=TRUE, results='hide', echo=T, message=F, warning=F}
-MI_BLCS.fit <- lavaan(MI_BLCS.model, data=dfwide, meanstructure=T, int.ov.free=T)
+MI_BLCS.fit <- lavaan(MI_BLCS.model, data=dfwide)
+```
+<details>
+  <summary>Click here to see the results</summary>
+```{r, eval=T, message=F}
 summary(MI_BLCS.fit, standardized = T)
 ```
-
-
+</details>
 
 ---

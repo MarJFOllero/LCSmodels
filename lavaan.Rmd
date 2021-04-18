@@ -506,11 +506,5 @@ MI_BLCS.fit <- lavaan(MI_BLCS.model, data=dfwide)
 ```{r, eval=T, message=F}
 summary(MI_BLCS.fit, standardized = T)
 ```
-</details>
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 22372aec60490f391d94521186d3f8c923444260
 ---

@@ -1,5 +1,5 @@
 ---
-title: "Properties and interpretation of LCS models"
+title: "Dynamical properties and conceptual interpretation of Latent Change Score models"
 author: 'Mar J.F. Ollero and [Pablo Fernández-Cáncer](mailto:pfernandezcancer@gmail.com) - Autonomous University of Madrid, Spain.'
 output: html_document
 bibliography: references.bib
@@ -23,6 +23,11 @@ In apps 1 and 2, you can control the parameters determining the evolution of the
 ##### [2. Bivariate LCS model: Means](https://marjfollero.shinyapps.io/BLCS_means/) 
 ##### [3. Univariate LCS model: Variances](https://marjfollero.shinyapps.io/LCS_variances/)  
 
+### R code:
+
+##### [lavaan](https://marjfollero.github.io/LCSmodels/docs/lavaan.html)
+
+##### [Openmx](https://marjfollero.github.io/LCSmodels/docs/openmx.html)
 
 ---
 

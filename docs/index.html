@@ -14,7 +14,8 @@
 
 <title>Dynamical properties and conceptual interpretation of Latent Change Score models</title>
 
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -57,6 +58,29 @@ if (window.hljs) {
 
 
 
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
 
 
 
@@ -80,6 +104,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -137,11 +164,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -170,8 +201,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -179,16 +210,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -232,7 +256,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -262,51 +286,103 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Dynamical properties and conceptual interpretation of Latent Change Score models</h1>
-<h4 class="author">Mar J.F. Ollero and <a href="mailto:pfernandezcancer@gmail.com">Pablo Fernández-Cáncer</a> - Autonomous University of Madrid, Spain.</h4>
+<h1 class="title toc-ignore">Dynamical properties and conceptual
+interpretation of Latent Change Score models</h1>
+<h4 class="author">Mar J.F. Ollero and <a
+href="mailto:pfernandezcancer@gmail.com">Pablo Fernández-Cáncer</a> -
+Autonomous University of Madrid, Spain.</h4>
 
 </div>
 
 
 <hr />
-<p>This website contains the supplemental materials for “Dynamical properties and conceptual interpretation of Latent Change Score models” by Fernández-Cáncer, Estrada, Ollero, and Ferrer (under review). We provide lavaan <span class="citation">(Rosseel 2012)</span> and OpenMx <span class="citation">(Neale et al. 2016)</span> code for the estimation of univariate and bivariate LCS models in R.</p>
-<p>In each section, you can also find code for estimating the stochastic specification of these models, and their extension with multiple indicators. For each model, we include a .txt file with simulated repeated measures of developmental processes associated with aging. The data is based on <span class="citation">Snitz et al. (2015)</span>, who examined the dynamic interrelations between subjective memory complaints and objective memory performance in a sample of 1980 old adults over five years (5 waves).</p>
+<p>This website contains the supplemental materials for “Dynamical
+properties and conceptual interpretation of Latent Change Score models”
+by Fernández-Cáncer, Estrada, Ollero, and Ferrer (2021). We provide
+lavaan (Rosseel, 2012) and OpenMx (Neale et al., 2016) code for the
+estimation of univariate and bivariate LCS models in R.</p>
+<p>In each section, you can also find code for estimating the stochastic
+specification of these models, and their extension with multiple
+indicators. For each model, we include a .txt file with simulated
+repeated measures of developmental processes associated with aging. The
+data is based on <span class="citation">Snitz et al. (2015)</span>, who
+examined the dynamic interrelations between subjective memory complaints
+and objective memory performance in a sample of 1980 old adults over
+five years (5 waves).</p>
 <hr />
 <div id="shiny-apps" class="section level3">
 <h3>Shiny apps</h3>
-<p>Here we present some interactive tools built with the R package Shiny (Chang et al., 2016). These <em>shiny apps</em> contain trajectories from univariate and bivariate LCS models. By moving the slide bars in the left panel, you can modify the values of the model parameters and examine the consequences in the shape of the observed long-term trajectories.</p>
-<p>In apps 1 and 2, you can control the parameters determining the evolution of the mean structure in an univariate and bivariate LCS model, respectively. In app 3, you can modify the variance parameters to examine the changes in within- and between-person variability in the observed trajectories.</p>
+<p>Here we present some interactive tools built with the R package Shiny
+(Chang et al., 2020). These <em>shiny apps</em> contain trajectories
+from univariate and bivariate LCS models. By moving the slide bars in
+the left panel, you can modify the values of the model parameters and
+examine the consequences in the shape of the observed long-term
+trajectories.</p>
+<p>In apps 1 and 2, you can control the parameters determining the
+evolution of the mean structure in an univariate and bivariate LCS
+model, respectively. In app 3, you can modify the variance parameters to
+examine the changes in within- and between-person variability in the
+observed trajectories.</p>
 <div id="univariate-lcs-model-means" class="section level5">
-<h5><a href="https://marjfollero.shinyapps.io/LCS-means/">1. Univariate LCS model: Means</a></h5>
+<h5><a href="https://marjfollero.shinyapps.io/LCS-means/">1. Univariate
+LCS model: Means</a></h5>
 </div>
 <div id="bivariate-lcs-model-means" class="section level5">
-<h5><a href="https://marjfollero.shinyapps.io/BLCS_means/">2. Bivariate LCS model: Means</a></h5>
+<h5><a href="https://marjfollero.shinyapps.io/BLCS_means/">2. Bivariate
+LCS model: Means</a></h5>
 </div>
 <div id="univariate-lcs-model-variances" class="section level5">
-<h5><a href="https://marjfollero.shinyapps.io/LCS_variances/">3. Univariate LCS model: Variances</a></h5>
+<h5><a href="https://marjfollero.shinyapps.io/LCS_variances/">3.
+Univariate LCS model: Variances</a></h5>
 </div>
 </div>
 <div id="r-code" class="section level3">
 <h3>R code:</h3>
 <div id="lavaan" class="section level5">
-<h5><a href="https://marjfollero.github.io/LCSmodels/docs/lavaan.html">lavaan</a></h5>
+<h5><a
+href="https://marjfollero.github.io/LCSmodels/docs/lavaan.html">lavaan</a></h5>
 </div>
 <div id="openmx" class="section level5">
-<h5><a href="https://marjfollero.github.io/LCSmodels/docs/openmx.html">Openmx</a></h5>
+<h5><a
+href="https://marjfollero.github.io/LCSmodels/docs/openmx.html">Openmx</a></h5>
 <hr />
 </div>
 </div>
 <div id="references" class="section level3 unnumbered">
-<h3>References</h3>
-<div id="refs" class="references">
-<div id="ref-Neale2016">
-<p>Neale, Michael C., Michael D. Hunter, Joshua N. Pritikin, Mahsa Zahery, Timothy R. Brick, Robert M. Kirkpatrick, Ryne Estabrook, Timothy C. Bates, Hermine H. Maes, and Steven M. Boker. 2016. “OpenMx 2.0: Extended Structural Equation and Statistical Modeling.” <em>Psychometrika</em> 81 (2): 535–49. <a href="https://doi.org/10.1007/s11336-014-9435-8">https://doi.org/10.1007/s11336-014-9435-8</a>.</p>
+<h3 class="unnumbered">References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-cancer_dynamical_2021" class="csl-entry">
+Cáncer, Pablo F., Eduardo Estrada, Mar J. F. Ollero, and Emilio Ferrer.
+2021. <span>“Dynamical Properties and Conceptual Interpretation of
+Latent Change Score Models.”</span> <em>Frontiers in Psychology</em> 48
+(2): 1–36. <a
+href="https://doi.org/10.3389/fpsyg.2021.696419">https://doi.org/10.3389/fpsyg.2021.696419</a>.
 </div>
-<div id="ref-Rosseel2012">
-<p>Rosseel, Yves. 2012. “lavaan: An R Package for Structural Equation Modeling.” <em>Journal of Statistical Software</em> 48 (2): 1–36. <a href="http://www.jstatsoft.org/v48/i02/">http://www.jstatsoft.org/v48/i02/</a>.</p>
+<div id="ref-chang_shiny_2020" class="csl-entry">
+Chang, Winston, Joe Cheng, J. J. Allaire, Yihui Xie, and Jonathan
+McPherson. 2020. <em>Shiny: Web Application Framework for r</em>. <a
+href="https://CRAN.R-project.org/package=shiny">https://CRAN.R-project.org/package=shiny</a>.
 </div>
-<div id="ref-Snitz2015">
-<p>Snitz, Beth E., Brent J. Small, Tianxiu Wang, Chung-Chou H. Chang, Tiffany F. Hughes, and Mary Ganguli. 2015. “Do Subjective Memory Complaints Lead or Follow Objective Cognitive Change? A Five-Year Population Study of Temporal Influence.” <em>Journal of the International Neuropsychological Society</em> 21 (9): 732–42. <a href="https://doi.org/10.1017/S1355617715000922">https://doi.org/10.1017/S1355617715000922</a>.</p>
+<div id="ref-neale_openmx_2016" class="csl-entry">
+Neale, Michael C., Michael D. Hunter, Joshua N. Pritikin, Mahsa Zahery,
+Timothy R. Brick, Robert M. Kirkpatrick, Ryne Estabrook, Timothy C.
+Bates, Hermine H. Maes, and Steven M. Boker. 2016.
+<span>“<span>OpenMx</span> 2.0: Extended Structural Equation and
+Statistical Modeling.”</span> <em>Psychometrika</em> 81 (2): 535–49. <a
+href="https://doi.org/10.1007/s11336-014-9435-8">https://doi.org/10.1007/s11336-014-9435-8</a>.
+</div>
+<div id="ref-rosseel_lavaan_2012" class="csl-entry">
+Rosseel, Yves. 2012. <span>“Lavaan: An r Package for Structural Equation
+Modeling.”</span> <em>Journal of Statistical Software</em> 12 (2). <a
+href="http://www.jstatsoft.org/v48/i02/">http://www.jstatsoft.org/v48/i02/</a>.
+</div>
+<div id="ref-snitz_subjective_2015" class="csl-entry">
+Snitz, Beth E., Brent J. Small, Tianxiu Wang, Chung-Chou H. Chang,
+Tiffany F. Hughes, and Mary Ganguli. 2015. <span>“Do Subjective Memory
+Complaints Lead or Follow Objective Cognitive Change? A Five-Year
+Population Study of Temporal Influence.”</span> <em>Journal of the
+International Neuropsychological Society</em> 21 (9): 732–42. <a
+href="https://doi.org/10.1017/S1355617715000922">https://doi.org/10.1017/S1355617715000922</a>.
 </div>
 </div>
 </div>
